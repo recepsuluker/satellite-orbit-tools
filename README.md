@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🛰️ Satellite Collision Detection & Visualization Platform
 
 This project is a modular toolkit for simulating, analyzing, and visualizing satellite orbits, pass predictions, and potential conjunction events.
@@ -72,7 +71,7 @@ python multi_conjunction_checker.py
 
 ---
 
-## 🌐 Run Web Dashboard
+## 🌐 Run Web Dashboard (will be publishing as soon!!!)
 
 ```bash
 # Navigate to React project (if using Vite/Next.js etc.)
@@ -93,9 +92,4 @@ npm run dev
 
 ---
 
-## 📄 License
-
-MIT License
-=======
-# satellite-orbit-tools
->>>>>>> 8685754533fd8ba3f59801efd51c9ef5d723647d
+by Recep Suluker, Apr 2025
