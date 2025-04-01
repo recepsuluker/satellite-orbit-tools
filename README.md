@@ -92,4 +92,13 @@ npm run dev
 
 ---
 
+<<<<<<< HEAD
 by Recep Suluker, Apr 2025
+=======
+by Recep Suluker
+
+MIT License
+=======
+# satellite-orbit-tools
+>>>>>>> 8685754533fd8ba3f59801efd51c9ef5d723647d
+>>>>>>> 0646a46891c4e251d30611d3db78eeef09e9deac
