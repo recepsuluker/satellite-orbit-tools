@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🛰️ Satellite Collision Detection & Visualization Platform
 
 This project is a modular toolkit for simulating, analyzing, and visualizing satellite orbits, pass predictions, and potential conjunction events.
@@ -93,7 +92,7 @@ npm run dev
 
 ---
 
-## 📄 License
+by Recep Suluker
 
 MIT License
 =======
