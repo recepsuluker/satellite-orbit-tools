@@ -55,18 +55,49 @@ pip install -r requirements.txt
 ```bash
 # Predict current satellite location (CSV output)
 python orbit_tracker.py
+# Print shown like this 
+
+    : datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+    created 'satellite_positions.csv' file.
 
 # Pass prediction for a ground station
 python ground_pass_checker.py
+# Print shown like this 
+
+    2025-04-02 06:49:44 UTC - AOS (Rise) - Azimuth: 194.1°, Elevation: 10.0°
+    2025-04-02 06:53:11 UTC - MAX (Peak) - Azimuth: 261.3°, Elevation: 35.0°
+    2025-04-02 06:56:40 UTC - LOS (Set) - Azimuth: 328.7°, Elevation: 10.0°
+    2025-04-02 18:27:13 UTC - AOS (Rise) - Azimuth: 33.5°, Elevation: 10.0°
+    2025-04-02 18:30:38 UTC - MAX (Peak) - Azimuth: 98.3°, Elevation: 32.0°
+    2025-04-02 18:34:00 UTC - LOS (Set) - Azimuth: 163.0°, Elevation: 10.0°
+    2025-04-02 20:03:13 UTC - AOS (Rise) - Azimuth: 306.0°, Elevation: 10.0°
+    2025-04-02 20:04:14 UTC - MAX (Peak) - Azimuth: 290.2°, Elevation: 10.9°
+    2025-04-02 20:05:15 UTC - LOS (Set) - Azimuth: 274.3°, Elevation: 10.0°
+
+
+
 
 # Generate 2D map
 python satellite_map_2d.py
+# Print shown like this 
+
+    ✅ created 2D map: satellite_track_2d.html
+
 
 # Generate 3D globe visualization
 python satellite_map_3d.py
+# Print shown like this 
+
+    ✅ created 3D map: satellite_track_3d.html
+
 
 # Check for collisions between satellites
 python multi_conjunction_checker.py
+# Print shown like this 
+
+    ✅ All clear. No close approaches detected.
+
 ```
 
 ---
