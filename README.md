@@ -100,6 +100,21 @@ python multi_conjunction_checker.py
 
 ```
 
+'''
+Just built a simple orbit visualization tool that maps satellite positions in real-time on:
+
+* 2D world map using Leaflet (Folium)
+
+ * 3D rotating globe using Plotly
+
+
+
+Open the HTML file in your folder
+
+Just double-click on the file or right-click → "Open with browser":
+'''
+
+
 ---
 
 ## 🌐 Run Web Dashboard (will be publishing as soon!!!)
