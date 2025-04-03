@@ -8,7 +8,7 @@ This project is a modular toolkit for simulating, analyzing, and visualizing sat
 
 ```
 📦 SatelliteProject
-├── orbit_tracker.py                 # Predict satellite positions from TLE
+├── orbit_tracker.py                # Predict satellite positions from TLE
 ├── ground_pass_checker.py          # Predict pass events for a given ground station
 ├── satellite_map_2d.py             # 2D map visualization using folium
 ├── satellite_map_3d.py             # 3D globe visualization using Plotly
