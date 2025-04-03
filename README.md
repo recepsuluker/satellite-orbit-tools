@@ -43,6 +43,8 @@ cd satellite-project
 # Create virtual environment (optional)
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
+# Remove-Item -Recurse -Force .\venv
+
 
 # Install Python dependencies
 pip install -r requirements.txt
@@ -52,6 +54,7 @@ pip install folium skyfield numpy pandas plotly
 
 # if you need to upgrade of python 
 python.exe -m pip install --upgrade pip
+
 
 ```
 ---
