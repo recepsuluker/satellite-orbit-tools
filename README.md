@@ -46,8 +46,14 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Install Python dependencies
 pip install -r requirements.txt
-```
 
+# library packages
+pip install folium skyfield numpy pandas plotly
+
+# if you need to upgrade of python 
+python.exe -m pip install --upgrade pip
+
+```
 ---
 
 ## 🧪 Run Modules
