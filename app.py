@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from jinja2 import Environment, FileSystemLoader
 import os
 import json
 from utils import (
@@ -39,7 +40,7 @@ async def get_all_passes():
 
 # Statik dosyalar ve şablonlar
 app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+templates = Environment(loader=FileSystemLoader("templates"))
 
 CONFIG_FILE = "config.json"
 
@@ -50,12 +51,13 @@ def save_config(config):
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     config = load_config()
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "satellites": config.get("satellites", []),
-        "ground_station": config.get("ground_station", {}),
-        "telegram": config.get("telegram", {})
-    })
+    template = templates.get_template("index.html")
+    content = template.render(
+        satellites=config.get("satellites", []),
+        ground_station=config.get("ground_station", {}),
+        telegram=config.get("telegram", {})
+    )
+    return HTMLResponse(content=content)
 
 @app.post("/update-telegram")
 async def update_telegram(bot_token: str = Form(...), chat_id: str = Form(...)):

@@ -1,14 +1,27 @@
 {
     "satellites": [
-        {"name": "ISS (ZARYA)", "norad_id": 25544},
-        {"name": "HUBBLE", "norad_id": 20580},
-        {"name": "STARLINK-1007", "norad_id": 44713}
+        {
+            "name": "ISS (ZARYA)",
+            "norad_id": 25544
+        },
+        {
+            "name": "HUBBLE",
+            "norad_id": 20580
+        },
+        {
+            "name": "STARLINK-1007",
+            "norad_id": 44713
+        },
+        {
+            "name": "XMM-NEWTON",
+            "norad_id": "25989"
+        }
     ],
     "ground_station": {
         "name": "Kennedy Space Center",
-        "latitude": 28.572,
-        "longitude": -80.648,
-        "elevation_m": 3
+        "latitude": 49.8667,
+        "longitude": 8.65,
+        "elevation_m": 3.0
     },
     "settings": {
         "conjunction_threshold_km": 10.0,
