@@ -18,7 +18,7 @@ app = FastAPI(title="Mission Control Dashboard")
 
 @app.get("/passes")
 async def get_all_passes():
-    """Tüm takibe alınan uydular için önümüzdeki geçişleri hesaplar."""
+    """Calculate upcoming passes for all tracked satellites."""
     satellites, _ = get_active_satellites()
     station, _ = get_ground_station()
     
@@ -27,10 +27,10 @@ async def get_all_passes():
         p = get_upcoming_passes(sat, station)
         all_passes.extend(p)
     
-    # Zaman sırasına göre diz
+    # Sort by time
     all_passes.sort(key=lambda x: x['aos']['datetime'])
     
-    # datetime objelerini string'e çevir (JSON serileştirme için)
+    # Convert datetime objects to strings (for JSON serialization)
     for p in all_passes:
         p['aos']['datetime'] = p['aos']['datetime'].isoformat()
         p['max']['datetime'] = p['max']['datetime'].isoformat()
@@ -38,7 +38,7 @@ async def get_all_passes():
         
     return all_passes
 
-# Statik dosyalar ve şablonlar
+# Static files and templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Environment(loader=FileSystemLoader("templates"))
 
@@ -73,7 +73,7 @@ async def test_telegram():
 
 @app.get("/search")
 async def search_satellites(q: str):
-    """Katalogda arama yapar ve ilk 10 sonucu döner."""
+    """Search in catalog and return first 10 results."""
     catalog = fetch_active_catalog()
     results = []
     for i in range(0, len(catalog) - 2, 3):
@@ -116,5 +116,5 @@ async def refresh_maps():
 
 if __name__ == "__main__":
     import uvicorn
-    fetch_active_catalog() # Uygulama açılırken kataloğu hazırla
+    fetch_active_catalog() # Prepare catalog when app starts
     uvicorn.run(app, host="0.0.0.0", port=8000)
