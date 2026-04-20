@@ -379,14 +379,16 @@
         formData.append('name', name);
         formData.append('norad_id', id);
         await fetch('/add-satellite', { method: 'POST', body: formData });
-        location.reload();
+        // Force reload with cache busting
+        location.reload(true);
     }
 
     async function removeSat(id) {
         const formData = new FormData();
         formData.append('norad_id', id);
         await fetch('/remove-satellite', { method: 'POST', body: formData });
-        location.reload();
+        // Force reload with cache busting
+        location.reload(true);
     }
 
     async function updateLocation() {

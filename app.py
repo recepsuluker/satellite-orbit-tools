@@ -96,7 +96,7 @@ async def add_satellite(name: str = Form(...), norad_id: str = Form(...)):
 @app.post("/remove-satellite")
 async def remove_satellite(norad_id: str = Form(...)):
     config = load_config()
-    config['satellites'] = [s for s in config['satellites'] if s['norad_id'] != norad_id]
+    config['satellites'] = [s for s in config['satellites'] if str(s['norad_id']) != norad_id]
     save_config(config)
     return {"status": "success"}
 
