@@ -1,0 +1,29 @@
+{
+    "satellites": [],
+    "ground_station": {
+        "name": "Kennedy Space Center",
+        "latitude": 28.572,
+        "longitude": -80.648,
+        "elevation_m": 3.0
+    },
+    "settings": {
+        "conjunction_threshold_km": 10.0,
+        "prediction_days": 1,
+        "tle_cache_expire_hours": 24
+    },
+    "email": {
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "sender_email": "your-email@gmail.com",
+        "sender_password": "your-app-password",
+        "receiver_email": "your-email@gmail.com"
+    },
+    "slack": {
+        "webhook_url": "https://hooks.slack.com/services/XXXX/XXXX/XXXX",
+        "channel": "#satellite-ops"
+    },
+    "telegram": {
+        "bot_token": "",
+        "chat_id": ""
+    }
+}

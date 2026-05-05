@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +26,7 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
-            background-image: 
+            background-image:
                 radial-gradient(at 0% 0%, rgba(88, 166, 255, 0.05) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(255, 0, 234, 0.05) 0px, transparent 50%);
         }
@@ -76,6 +77,7 @@
             padding: 1.2rem;
             transition: transform 0.2s, background 0.2s;
         }
+
         .card:hover {
             background: rgba(255, 255, 255, 0.05);
             transform: translateY(-2px);
@@ -141,19 +143,29 @@
             gap: 8px;
             transition: all 0.2s;
         }
+
         .btn:hover {
             filter: brightness(1.1);
             transform: scale(1.02);
         }
-        .btn:active { transform: scale(0.98); }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
 
         .spinner {
             animation: rotate 2s linear infinite;
             display: none;
         }
+
         @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .status-badge {
@@ -165,269 +177,1062 @@
             letter-spacing: 0.05em;
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 10px;
+        }
+
+        /* AGENT CHAT PANEL — centered, transparent blue glass */
+        .agent-chat {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 460px;
+            max-width: calc(100vw - 60px);
+            height: 560px;
+            max-height: calc(100vh - 140px);
+            background: linear-gradient(135deg,
+                    rgba(13, 110, 253, 0.18) 0%,
+                    rgba(88, 166, 255, 0.08) 100%);
+            backdrop-filter: blur(18px) saturate(140%);
+            -webkit-backdrop-filter: blur(18px) saturate(140%);
+            border: 1px solid rgba(88, 166, 255, 0.35);
+            border-radius: 22px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.55),
+                0 0 0 1px rgba(88, 166, 255, 0.08),
+                0 0 80px rgba(13, 110, 253, 0.18);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .agent-chat.minimized {
+            height: 56px;
+        }
+
+        .agent-chat.minimized .agent-chat-body,
+        .agent-chat.minimized .agent-chat-input,
+        .agent-chat.minimized .live-sats-strip {
+            display: none;
+        }
+
+        .agent-chat-header {
+            padding: 12px 20px;
+            background: rgba(13, 110, 253, 0.28);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .agent-chat-controls {
+            display: flex;
+            gap: 6px;
+            margin-left: 10px;
+        }
+
+        .agent-chat-controls button {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: var(--text-main);
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            line-height: 1;
+        }
+
+        .agent-chat-controls button:hover {
+            background: rgba(88, 166, 255, 0.25);
+        }
+
+        /* LIVE TRACKED SATELLITES STRIP (inside chat) */
+        .live-sats-strip {
+            padding: 8px 14px;
+            background: rgba(13, 110, 253, 0.12);
+            border-bottom: 1px solid rgba(88, 166, 255, 0.18);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 130px;
+            overflow-y: auto;
+        }
+
+        .live-sats-strip .live-sats-title {
+            font-size: 0.65rem;
+            color: var(--accent-color);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-sats-strip .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #58a6ff;
+            box-shadow: 0 0 8px #58a6ff;
+            animation: blink 1.5s infinite;
+        }
+
+        .live-sats-strip .live-sat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(88, 166, 255, 0.18);
+            border-radius: 6px;
+        }
+
+        .live-sats-strip .live-sat-row .sat-name {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .live-sats-strip .live-sat-row .sat-id {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .live-sats-strip .empty {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-style: italic;
+            text-align: center;
+            padding: 6px 0;
+        }
+
+        .agent-chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-bubble {
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            max-width: 80%;
+        }
+
+        .chat-bubble.agent {
+            background: rgba(255, 255, 255, 0.05);
+            align-self: flex-start;
+        }
+
+        .chat-bubble.user {
+            background: var(--accent-color);
+            color: #0d1117;
+            align-self: flex-end;
+            font-weight: 500;
+        }
+
+        .agent-chat-input {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 8px;
+        }
+
+        .agent-chat-input input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            padding: 8px 12px;
+            outline: none;
+        }
+
+        /* MONITOR ALERT — header button, matches REFRESH SYSTEM look */
+        #monitor-alert {
+            letter-spacing: 0.04em;
+        }
+
+        /* Dot inside the monitor button (button bg is blue, so dot must be dark) */
+        #monitor-alert .alert-dot {
+            background: #0b0e14;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .alert-dot {
+            width: 8px;
+            height: 8px;
+            background: #58a6ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #58a6ff;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 1rem;
+        }
+
+        .pass-row {
+            border-bottom: 1px solid #222;
+            padding: 5px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
+            gap: 5px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            from { box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
+            to { box-shadow: 0 0 25px rgba(255, 0, 0, 0.8); }
+        }
     </style>
 </head>
+
 <body>
 
-<header>
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <span style="font-size: 1.8rem;">🚀</span>
-        <div>
-            <h1 style="margin: 0; font-size: 1.1rem; letter-spacing: 0.05em;">TRACKING SYSTEM</h1>
-            <div style="font-size: 0.7rem; color: var(--text-dim); transition: 0.3s;" id="last-update">LIVE FEED ACTIVE</div>
-        </div>
-    </div>
-    <button class="btn" onclick="refreshMaps()" id="refresh-btn">
-        <span class="spinner" id="btn-spinner">🔄</span>
-        <span id="btn-text">REFRESH SYSTEM</span>
-    </button>
-</header>
-
-<div class="main-container">
-     <div class="sidebar">
-        <!-- SEARCH SECTION -->
-        <div>
-            <h3 style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 0.5rem;">🔍 ADD SATELLITE</h3>
-            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-                <input type="text" id="search-input" placeholder="Name or NORAD ID..." style="flex: 1; background: #0d1117; border: 1px solid var(--card-border); color: white; padding: 5px; border-radius: 4px;">
-                <button onclick="searchSat()" class="btn" style="padding: 5px 10px;">Go</button>
+    <!-- AGENT CHAT PANEL (floating, non-blocking) -->
+    <div class="agent-chat" id="agent-chat" style="position: fixed; z-index: 9999; pointer-events: auto;">
+        <div class="agent-chat-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1rem;">🤖</span>
+                <span style="font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em;">MISSION AGENT</span>
             </div>
-            <div id="search-results" style="font-size: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 4px; max-height: 150px; overflow-y: auto;"></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="status-badge" style="background: rgba(88, 166, 255, 0.2); color: var(--accent-color); font-size: 0.6rem;">ONLINE</div>
+                <div class="agent-chat-controls">
+                    <button onclick="toggleChatMinimize()">_</button>
+                    <button onclick="hideChat()">✕</button>
+                </div>
+            </div>
         </div>
 
-        <!-- CONSTELLATION SECTION -->
-        <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
-            <h3 style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem;">🛰️ CONSTELLATION</h3>
-{% for sat in satellites %}
-            <div class="satellite-item" style="justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div class="sat-icon" style="background-color: #58a6ff;"></div>
-                    <div>
-                        <div style="font-size: 0.85rem; font-weight: 600;">{{ sat.name }}</div>
-                        <div style="font-size: 0.7rem; color: var(--text-dim);">ID: {{ sat.norad_id }}</div>
-                    </div>
-                </div>
-                <button onclick="removeSat('{{ sat.norad_id }}')" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: 0.8rem;">✕</button>
+        <!-- LIVE TRACKED SATELLITES -->
+        <div class="live-sats-strip" id="live-sats-strip">
+            <div class="live-sats-title">
+                <span class="live-dot"></span>
+                <span>LIVE TRACKED</span>
+                <span style="margin-left:auto; color: var(--text-dim);">
+                    {% if satellites %}{{ satellites|length }} ASSETS{% else %}0 ASSETS{% endif %}
+                </span>
+            </div>
+            {% if satellites %}
+            {% for sat in satellites %}
+            <div class="live-sat-row">
+                <span class="sat-name">🛰️ {{ sat.name }}</span>
+                <span class="sat-id">NORAD {{ sat.norad_id }}</span>
             </div>
             {% endfor %}
+            {% else %}
+            <div class="empty">No satellites defined yet — add one from the sidebar.</div>
+            {% endif %}
         </div>
 
-        <!-- VISIBILITY SECTION -->
-        <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
-            <h3 style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 0.5rem;">📊 COMING PASSES</h3>
-            <div id="pass-table" style="font-size: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 5px;">
-                Loading passes...
-            </div>
+        <div class="agent-chat-body" id="chat-body">
+            <div class="chat-bubble agent">Welcome Commander. I am your orbital mission assistant. How can I help you
+                today?</div>
+            {% if satellites %}
+            <div class="chat-bubble agent">I am currently monitoring <b>{{ satellites|length }}</b> satellites in your
+                constellation.</div>
+            {% endif %}
         </div>
 
-        <!-- GROUND STATION SECTION -->
-        <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
-            <h3 style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem;">📡 OPS LOCATION</h3>
-            <div class="card" style="padding: 10px; font-size: 0.8rem;">
-                <input type="text" id="gs-name" value="{{ ground_station.name }}" placeholder="Station Name" style="width: 100%; margin-bottom: 5px; background: transparent; border: none; color: white; font-weight: bold;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-                    <input type="number" id="gs-lat" value="{{ ground_station.latitude }}" step="0.001" style="background: #0d1117; border: 1px solid #333; color: #fff; padding: 2px;">
-                    <input type="number" id="gs-lon" value="{{ ground_station.longitude }}" step="0.001" style="background: #0d1117; border: 1px solid #333; color: #fff; padding: 2px;">
-                </div>
-                <input type="number" id="gs-ele" value="{{ ground_station.elevation_m }}" placeholder="Ele (m)" style="width: 100%; margin-top: 5px; background: #0d1117; border: 1px solid #333; color: #fff; padding: 2px;">
-                <button onclick="updateLocation()" class="btn" style="width: 100%; margin-top: 10px; padding: 4px; font-size: 0.7rem; background: #30363d; color: white;">SAVE LOCATION</button>
-            </div>
-        </div>
-        
-        <!-- TELEGRAM SECTION -->
-        <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
-            <h3 style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem;">📲 TELEGRAM COMMS</h3>
-            <div class="card" style="padding: 10px; font-size: 0.75rem;">
-                <input type="password" id="tg-token" value="{{ telegram.get('bot_token', '') }}" placeholder="Bot Token" style="width: 100%; margin-bottom: 5px; background: #0d1117; border: 1px solid #333; color: white;">
-                <input type="text" id="tg-chat" value="{{ telegram.get('chat_id', '') }}" placeholder="Chat ID" style="width: 100%; margin-bottom: 5px; background: #0d1117; border: 1px solid #333; color: white;">
-                <div style="display: flex; gap: 5px;">
-                    <button onclick="updateTelegram()" class="btn" style="flex: 1; padding: 4px; font-size: 0.7rem; background: #30363d; color: white;">SET</button>
-                    <button onclick="testTelegram()" class="btn" style="flex: 1; padding: 4px; font-size: 0.7rem; background: #238636; color: white;">TEST</button>
-                </div>
-            </div>
-        </div>
-        
-        <div id="status-msg" style="margin-top: auto; font-size: 0.75rem; color: var(--accent-color); border-top: 1px solid var(--card-border); padding-top: 1rem;">
-            SYSTEM NOMINAL
+        <div class="agent-chat-input">
+            <input type="text" id="chat-input" placeholder="Transmit command..."
+                onkeypress="if(event.key === 'Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()"
+                style="background: transparent; border: none; color: var(--accent-color); cursor: pointer; font-size: 1.2rem;">🚀</button>
         </div>
     </div>
+
+    <!-- Re-open button for when chat is hidden -->
+    <button id="agent-chat-reopen" onclick="showChat()" style="display:none; position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+               background: rgba(13, 110, 253, 0.25); backdrop-filter: blur(12px);
+               border: 1px solid rgba(88, 166, 255, 0.35); border-radius: 50%;
+               width: 52px; height: 52px; color: var(--accent-color); font-size: 1.4rem;
+               cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.4);">
+        🤖
+    </button>
+
+    <header>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 1.8rem;">🚀</span>
+            <div>
+                <h1 style="margin: 0; font-size: 1.1rem; letter-spacing: 0.05em;">TRACKING SYSTEM</h1>
+                <div style="font-size: 0.7rem; color: var(--text-dim); transition: 0.3s;" id="last-update">LIVE FEED
+                    ACTIVE</div>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="btn" id="monitor-alert" type="button" title="System monitor">
+                <span class="alert-dot" style="margin: 0;"></span>
+                <span id="monitor-alert-status">MONITOR ALERT: SYSTEM STABLE</span>
+            </button>
+            <button class="btn" onclick="refreshMaps()" id="refresh-btn">
+                <span class="spinner" id="btn-spinner">🔄</span>
+                <span id="btn-text">REFRESH SYSTEM</span>
+            </button>
+        </div>
+    </header>
 
     <!-- NOTIFICATION OVERLAY -->
-    <div id="alert-banner" style="display:none; position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background: #ff4d4d; color: white; padding: 10px 20px; border-radius: 30px; z-index: 1000; box-shadow: 0 0 20px rgba(255,0,0,0.5); font-weight: bold; align-items: center; gap: 10px; animation: pulse 1s infinite alternate;">
-        <span>🔔 ALERT:</span> <span id="alert-text">SATELLITE APPROACHING</span>
+    <div id="alert-banner"
+        style="display:none; position: fixed; top: 75px; right: 20px; background: rgba(255, 77, 77, 0.9); backdrop-filter: blur(10px); color: white; padding: 6px 15px; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: 500; font-size: 0.75rem; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); animation: slideIn 0.3s ease-out;">
+        <span style="font-size: 0.9rem;">🔔</span>
+        <div style="display: flex; flex-direction: column;">
+            <span style="font-weight: 700; font-size: 0.65rem; letter-spacing: 0.05em; opacity: 0.9;">SYSTEM ALERT</span>
+            <span id="alert-text">SATELLITE APPROACHING</span>
+        </div>
+        <button onclick="this.parentElement.style.display='none'"
+            style="background:none; border:none; color:white; cursor:pointer; font-size: 1rem; margin-left: 5px; opacity: 0.7;">×</button>
     </div>
 
-    <style>
-        @keyframes pulse { from { box-shadow: 0 0 10px rgba(255,0,0,0.4); } to { box-shadow: 0 0 25px rgba(255,0,0,0.8); } }
-        .pass-row { border-bottom: 1px solid #222; padding: 5px; display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 5px; }
-        .grid-layout { display: grid; grid-template-columns: 2fr 1.2fr; gap: 1rem; flex: 1; min-height: 400px; }
-    </style>
-
-    <div class="content">
-        <div class="grid-layout">
-            <div class="map-container">
-                <div class="map-header">
-                    <span>2D MERCATOR - ORBIT TRACKERS</span>
-                    <span class="status-badge">Live Animation</span>
+    <div class="main-container">
+        <div class="sidebar">
+            <!-- SEARCH SECTION -->
+            <div>
+                <h3 style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 0.5rem;">🔍 ADD SATELLITE</h3>
+                <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                    <input type="text" id="search-input" placeholder="Name or NORAD ID..."
+                        style="flex: 1; background: #0d1117; border: 1px solid var(--card-border); color: white; padding: 5px; border-radius: 4px;">
+                    <button onclick="searchSat()" class="btn" style="padding: 5px 10px;">Go</button>
                 </div>
-                <iframe id="map-2d" class="map-frame" src="/static/satellite_track_2d.html"></iframe>
+                <div id="search-results"
+                    style="font-size: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 4px; max-height: 150px; overflow-y: auto;">
+                </div>
             </div>
 
-            <div class="map-container">
-                <div class="map-header">
-                    <span>🔭 SKY-VIEW RADAR</span>
-                    <span class="status-badge" style="background: #e3b341; color: black;">Topocentric</span>
+            <!-- CONSTELLATION SECTION -->
+            <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                <h3 style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem;">🛰️ CONSTELLATION</h3>
+                {% for sat in satellites %}
+                <div class="satellite-item" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="sat-icon" style="background-color: #58a6ff;"></div>
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 600;">{{ sat.name }}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-dim);">ID: {{ sat.norad_id }}</div>
+                        </div>
+                    </div>
+                    <button onclick="removeSat('{{ sat.norad_id }}')"
+                        style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: 0.8rem;">✕</button>
                 </div>
-                <iframe id="map-sky" class="map-frame" src="/static/satellite_sky_view.html"></iframe>
+                {% endfor %}
+            </div>
+
+            <!-- VISIBILITY SECTION -->
+            <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                <h3 style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 0.5rem;">📊 COMING PASSES</h3>
+                <div id="pass-table"
+                    style="font-size: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 5px;">
+                    Loading passes...
+                </div>
+            </div>
+
+            <!-- CONJUNCTION RISKS SECTION -->
+            <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h3 style="font-size: 0.9rem; color: #ff4d4d; margin: 0;">⚠️ CONJUNCTION RISKS</h3>
+                    <span class="status-badge"
+                        style="background: rgba(255, 77, 77, 0.2); color: #ff4d4d; font-size: 0.55rem;">Analysis
+                        Active</span>
+                </div>
+                <div id="conjunction-table"
+                    style="font-size: 0.7rem; background: rgba(255, 77, 77, 0.05); border-radius: 8px; padding: 5px; max-height: 120px; overflow-y: auto;">
+                    No immediate risks...
+                </div>
+            </div>
+
+            <!-- GROUND STATION SECTION (Modernized) -->
+            <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                <h3
+                    style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                    <span style="color: var(--accent-color)">📍</span> OPS LOCATION
+                </h3>
+                <div class="card"
+                    style="padding: 15px; background: linear-gradient(145deg, rgba(22,27,34,0.4), rgba(13,110,253,0.05)); border: 1px solid rgba(88, 166, 255, 0.2); box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                    <!-- City Search Area -->
+                    <div style="display: flex; gap: 5px; margin-bottom: 12px;">
+                        <input type="text" id="city-search" placeholder="Search City (e.g. Istanbul)"
+                            style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid #444; color: white; padding: 6px; border-radius: 4px; font-size: 0.75rem;">
+                        <button onclick="findCity()" class="btn"
+                            style="padding: 0 12px; background: var(--success); font-size: 1rem;">+</button>
+                    </div>
+
+                    <input type="text" id="gs-name" value="{{ ground_station.name }}" placeholder="Station Name"
+                        style="width: 100%; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--accent-color); font-weight: bold; padding: 6px; border-radius: 4px; outline: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <span
+                                style="font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.05em;">LATITUDE</span>
+                            <input type="number" id="gs-lat" value="{{ ground_station.latitude }}" step="0.001"
+                                style="background: rgba(0,0,0,0.3); border: 1px solid #333; color: #fff; padding: 5px; border-radius: 4px;">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <span
+                                style="font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.05em;">LONGITUDE</span>
+                            <input type="number" id="gs-lon" value="{{ ground_station.longitude }}" step="0.001"
+                                style="background: rgba(0,0,0,0.3); border: 1px solid #333; color: #fff; padding: 5px; border-radius: 4px;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <span style="font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.05em;">ELEVATION
+                            (M)</span>
+                        <input type="number" id="gs-ele" value="{{ ground_station.elevation_m }}" placeholder="Ele (m)"
+                            style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: #fff; padding: 5px; border-radius: 4px;">
+                    </div>
+                    <button onclick="updateLocation()" class="btn"
+                        style="width: 100%; padding: 10px; font-size: 0.75rem; background: linear-gradient(90deg, #1d4ed8, #2563eb); color: white; border-radius: 6px; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); text-transform: uppercase; letter-spacing: 0.1em;">
+                        Update Base Station 🛰️
+                    </button>
+                </div>
+            </div>
+
+            <!-- MISSION COMMS SECTION -->
+            <div style="border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                <h3
+                    style="font-size: 0.9rem; color: var(--accent-color); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                    <span>📡</span> MISSION COMMS
+                </h3>
+
+                <!-- Channel Access Buttons (2x2 Grid) -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px;">
+                    <a href="https://slack.com" target="_blank" class="btn"
+                        style="background: #4A154B; color: white; padding: 8px; font-size: 0.65rem; text-decoration: none; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+                        <span>💬</span> SLACK
+                    </a>
+                    <a href="https://mail.google.com" target="_blank" class="btn"
+                        style="background: #EA4335; color: white; padding: 8px; font-size: 0.65rem; text-decoration: none; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+                        <span>📧</span> EMAIL
+                    </a>
+                    <a href="https://web.telegram.org" target="_blank" class="btn"
+                        style="background: #0088cc; color: white; padding: 8px; font-size: 0.65rem; text-decoration: none; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+                        <span>📱</span> TELEGRAM
+                    </a>
+                    <a href="https://www.space-track.org" target="_blank" class="btn"
+                        style="background: #343a40; color: #f8f9fa; padding: 8px; font-size: 0.65rem; text-decoration: none; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+                        <span>🛰️</span> SPACE-TRACK
+                    </a>
+                </div>
+
+                <div style="font-size: 0.65rem; color: var(--text-dim); margin-top: 10px; text-align: center;">
+                    Notify Agent is monitoring all mission channels.
+                </div>
+            </div>
+
+            <!-- STEP 1: MANEUVER PLANNING SECTION -->
+            <div style="border-top: 1px solid var(--card-border); padding-top: 1rem; margin-top: 1rem;">
+                <h3 style="font-size: 0.9rem; color: #f8a619; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                    <span>🔥</span> MANEUVER PLANNING
+                </h3>
+                <div class="card" style="padding: 12px; background: rgba(248, 166, 25, 0.05); border: 1px solid rgba(248, 166, 25, 0.2);">
+                    <select id="man-sat-id" style="width: 100%; margin-bottom: 8px; background: #0d1117; color: white; border: 1px solid #333; padding: 4px; font-size: 0.75rem;">
+                        <option value="">Select Satellite...</option>
+                        {% for sat in satellites %}
+                        <option value="{{ sat.norad_id }}">{{ sat.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div style="font-size: 0.6rem; color: var(--text-dim); margin-bottom: 4px;">PLANNED START (UTC)</div>
+                    <input type="datetime-local" id="man-time" style="width: 100%; margin-bottom: 8px; background: #0d1117; color: white; border: 1px solid #333; padding: 4px; font-size: 0.75rem;">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-size: 0.6rem; color: var(--text-dim);">DV (m/s)</div>
+                            <input type="number" id="man-dv" placeholder="1.5" step="0.1" style="width: 100%; background: #0d1117; color: white; border: 1px solid #333; padding: 4px; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <div style="font-size: 0.6rem; color: var(--text-dim);">DURATION (s)</div>
+                            <input type="number" id="man-duration" placeholder="30" style="width: 100%; background: #0d1117; color: white; border: 1px solid #333; padding: 4px; font-size: 0.75rem;">
+                        </div>
+                    </div>
+                    
+                    <button onclick="planManeuver()" class="btn" style="width: 100%; padding: 6px; font-size: 0.7rem; background: #f8a619; color: black; font-weight: bold;">
+                        SCHEDULE THRUST 🔥
+                    </button>
+                </div>
+                <div id="planned-maneuvers-list" style="margin-top: 10px; font-size: 0.65rem; color: #f8a619;">
+                    <!-- Maneuvers list will be populated here -->
+                </div>
+            </div>
+
+            <!-- STEP 4: CDM IMPORT SECTION -->
+            <div style="border-top: 1px solid var(--card-border); padding-top: 1rem; margin-top: 1rem;">
+                <h3 style="font-size: 0.9rem; color: #8957e5; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                    <span>📑</span> PRECISION ANALYSIS (CDM)
+                </h3>
+                <div class="card" style="padding: 12px; background: rgba(137, 87, 229, 0.05); border: 1px solid rgba(137, 87, 229, 0.2);">
+                    <div style="font-size: 0.6rem; color: var(--text-dim); margin-bottom: 8px;">Upload Space-Track CDM XML</div>
+                    <input type="file" id="cdm-file" style="width: 100%; font-size: 0.7rem; color: #8957e5; margin-bottom: 8px;">
+                    <button onclick="importCDM()" class="btn" style="width: 100%; padding: 6px; font-size: 0.7rem; background: #8957e5; color: white;">
+                        IMPORT PRECISION DATA
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: auto; font-size: 0.75rem; color: var(--accent-color); border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                SYSTEM NOMINAL
             </div>
         </div>
 
-        <div class="map-container" style="flex: 1.2;">
-            <div class="map-header">
-                <span>3D ORTHOGRAPHIC GLOBE</span>
-                <span class="status-badge" style="background: #8957e5;">Constellation</span>
+        <!-- CONTENT AREA (directly after sidebar, no interruptions) -->
+        <div class="content">
+            <div class="grid-layout">
+                <!-- TOP ROW: 2D and SKY-VIEW -->
+                <div class="map-container" style="flex: 1.5;">
+                    <div class="map-header">
+                        <span>🛰️ 2D MERCATOR - ORBIT TRACKERS</span>
+                        <span class="status-badge">LIVE ANIMATION</span>
+                    </div>
+                    <iframe id="map-2d" class="map-frame" src="/static/satellite_track_2d.html" style="height: 450px;"></iframe>
+                </div>
+
+                <div class="map-container" style="flex: 1;">
+                    <div class="map-header">
+                        <span>🔭 SKY-VIEW RADAR</span>
+                        <span class="status-badge" style="background: #e3b341; color: black;">TOPOCENTRIC</span>
+                    </div>
+                    <iframe id="map-sky" class="map-frame" src="/static/satellite_sky_view.html" style="height: 450px;"></iframe>
+                </div>
             </div>
-            <iframe id="map-3d" class="map-frame" src="/static/satellite_track_3d.html"></iframe>
+
+            <!-- BOTTOM ROW: 3D GLOBE WIDE -->
+            <div class="map-container" style="margin-top: 1rem;">
+                <div class="map-header">
+                    <span>🌍 3D ORTHOGRAPHIC GLOBE</span>
+                    <span class="status-badge" style="background: #8957e5;">CONSTELLATION</span>
+                </div>
+                <iframe id="map-3d" class="map-frame" src="/static/satellite_track_3d.html" style="height: 450px;"></iframe>
+            </div>
+
+            <!-- MISSION TERMINAL -->
+            <div class="card" style="background: #000; border: 1px solid #333; padding: 0.5rem; height: 120px; overflow: hidden; display: flex; flex-direction: column; margin-top: 1rem;">
+                <div style="font-size: 0.65rem; color: #58a6ff; font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between;">
+                    <span>> MISSION_OPERATIONS_LOG</span>
+                </div>
+                <div id="terminal-logs" style="flex: 1; font-family: 'Courier New', monospace; font-size: 0.7rem; color: #00ff88; overflow-y: auto;">
+                    [SYSTEM] Monitoring constellation health...
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    // TELEGRAM FUNCTIONS
-    async function updateTelegram() {
-        const formData = new FormData();
-        formData.append('bot_token', document.getElementById('tg-token').value);
-        formData.append('chat_id', document.getElementById('tg-chat').value);
-        await fetch('/update-telegram', { method: 'POST', body: formData });
-        alert("Telegram configuration saved!");
-    }
+    <script>
+        // TELEGRAM FUNCTIONS
+        async function updateTelegram() {
+            const formData = new FormData();
+            formData.append('bot_token', document.getElementById('tg-token').value);
+            formData.append('chat_id', document.getElementById('tg-chat').value);
+            await fetch('/update-telegram', { method: 'POST', body: formData });
+            alert("Telegram configuration saved!");
+        }
 
-    async function testTelegram() {
-        const btn = event.target;
-        btn.innerText = "SENDING...";
-        const res = await fetch('/test-telegram', { method: 'POST' });
-        const data = await res.json();
-        alert(data.status === 'success' ? "🚀 Test message sent to Telegram!" : "❌ Failed to send message. Check Token/ID.");
-        btn.innerText = "TEST";
-    }
+        async function testTelegram() {
+            const btn = event.target;
+            btn.innerText = "SENDING...";
+            const res = await fetch('/test-telegram', { method: 'POST' });
+            const data = await res.json();
+            alert(data.status === 'success' ? "🚀 Test message sent to Telegram!" : "❌ Failed to send message. Check Token/ID.");
+            btn.innerText = "TEST";
+        }
 
-    // PAS CALCULATIONS & UPDATES
-    async function updatePasses() {
-        try {
-            const response = await fetch('/passes');
-            const data = await response.json();
-            const table = document.getElementById('pass-table');
-            const banner = document.getElementById('alert-banner');
-            const alertText = document.getElementById('alert-text');
-            
-            table.innerHTML = "";
-            let alertFound = false;
-            const now = new Date();
+        // PAS CALCULATIONS & UPDATES
+        async function updatePasses() {
+            try {
+                const response = await fetch('/passes');
+                const data = await response.json();
+                const table = document.getElementById('pass-table');
+                const banner = document.getElementById('alert-banner');
+                const alertText = document.getElementById('alert-text');
 
-            data.forEach(p => {
-                const aosTime = new Date(p.aos.datetime);
-                const diffMin = (aosTime - now) / 60000;
+                table.innerHTML = "";
+                let alertFound = false;
+                const now = new Date();
 
-                // Tabloya Ekle
-                const row = document.createElement('div');
-                row.className = "pass-row";
-                row.innerHTML = `
+                data.forEach(p => {
+                    const aosTime = new Date(p.aos.datetime);
+                    const diffMin = (aosTime - now) / 60000;
+
+                    // Tabloya Ekle
+                    const row = document.createElement('div');
+                    row.className = "pass-row";
+                    row.innerHTML = `
                     <div style="font-weight:600">${p.satellite}</div>
                     <div>🕒${p.aos.time}</div>
                     <div style="color:var(--accent-color)">⏳${p.duration_min}m</div>
                 `;
-                table.appendChild(row);
+                    table.appendChild(row);
 
-                // Bildirim Kontrolü (15 dk kala)
-                if (diffMin > 0 && diffMin < 15 && !alertFound) {
-                    alertFound = true;
-                    banner.style.display = "flex";
-                    alertText.innerText = `${p.satellite} rising in ${Math.round(diffMin)} mins!`;
-                }
-            });
+                    // Bildirim Kontrolü (15 dk kala)
+                    if (diffMin > 0 && diffMin < 15 && !alertFound) {
+                        alertFound = true;
+                        banner.style.display = "flex";
+                        alertText.innerText = `${p.satellite} rising in ${Math.round(diffMin)} mins!`;
+                    }
+                });
 
-            if (!alertFound) banner.style.display = "none";
+                if (!alertFound) banner.style.display = "none";
 
-        } catch (e) { console.error("Pass load failed", e); }
-    }
-
-    // Interval: Her 1 dakikada bir kontrol et
-    setInterval(updatePasses, 60000);
-    updatePasses(); // İlk açılışta çalıştır
-
-    async function searchSat() {
-        const q = document.getElementById('search-input').value;
-        const resDiv = document.getElementById('search-results');
-        resDiv.innerHTML = "Searching...";
-        const response = await fetch(`/search?q=${q}`);
-        const data = await response.json();
-        resDiv.innerHTML = "";
-        data.forEach(s => {
-            const div = document.createElement('div');
-            div.style = "padding: 5px; border-bottom: 1px solid #222; cursor: pointer; display: flex; justify-content: space-between;";
-            div.innerHTML = `<span>${s.name} (${s.norad_id})</span> <span style="color: var(--accent-color)">+</span>`;
-            div.onclick = () => addSat(s.name, s.norad_id);
-            resDiv.appendChild(div);
-        });
-    }
-
-    async function addSat(name, id) {
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('norad_id', id);
-        await fetch('/add-satellite', { method: 'POST', body: formData });
-        location.reload();
-    }
-
-    async function removeSat(id) {
-        const formData = new FormData();
-        formData.append('norad_id', id);
-        await fetch('/remove-satellite', { method: 'POST', body: formData });
-        location.reload();
-    }
-
-    async function updateLocation() {
-        const formData = new FormData();
-        formData.append('name', document.getElementById('gs-name').value);
-        formData.append('lat', document.getElementById('gs-lat').value);
-        formData.append('lon', document.getElementById('gs-lon').value);
-        formData.append('ele', document.getElementById('gs-ele').value);
-        await fetch('/update-location', { method: 'POST', body: formData });
-        location.reload(); // Konum değişince her şeyi sıfırla
-    }
-
-    async function refreshMaps() {
-        const btn = document.getElementById('refresh-btn');
-        const spinner = document.getElementById('btn-spinner');
-        const text = document.getElementById('btn-text');
-        const msg = document.getElementById('status-msg');
-        
-        btn.disabled = true;
-        spinner.style.display = "inline-block";
-        text.innerText = "UPDATING...";
-        msg.innerText = "COMPUTING ORBITS & PASSES...";
-        
-        try {
-            const response = await fetch('/refresh-maps', { method: 'POST' });
-            if (response.ok) {
-                document.getElementById('map-2d').src = '/static/satellite_track_2d.html?v=' + Date.now();
-                document.getElementById('map-3d').src = '/static/satellite_track_3d.html?v=' + Date.now();
-                document.getElementById('map-sky').src = '/static/satellite_sky_view.html?v=' + Date.now();
-                updatePasses(); // Tabloyu da güncelle
-                msg.innerText = "SYSTEM NOMINAL - LAST REFRESH: " + new Date().toLocaleTimeString();
-            } else {
-                msg.innerText = "❌ REFRESH FAILED";
-            }
-        } finally {
-            btn.disabled = false;
-            spinner.style.display = "none";
-            text.innerText = "REFRESH SYSTEM";
+            } catch (e) { console.error("Pass load failed", e); }
         }
-    }
-</script>
+
+        // Interval: Her 1 dakikada bir kontrol et
+        setInterval(updatePasses, 60000);
+        updatePasses(); // İlk açılışta çalıştır
+
+        async function updateConjunctions() {
+            try {
+                const response = await fetch('/conjunctions');
+                const data = await response.json();
+                const table = document.getElementById('conjunction-table');
+                const banner = document.getElementById('alert-banner');
+                const alertText = document.getElementById('alert-text');
+                const monitorStatus = document.getElementById('monitor-alert-status');
+
+                if (!data || data.length === 0) {
+                    table.innerHTML = '<div style="color:var(--text-dim); padding:5px; text-align:center;">No close approaches detected.</div>';
+                    return;
+                }
+
+                table.innerHTML = "";
+                let criticalRisk = false;
+                let criticalInfo = "";
+
+                data.forEach(risk => {
+                    const row = document.createElement('div');
+                    row.style = "padding: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;";
+
+                    const isCritical = risk.distance_km < 1.0 || risk.is_maneuvering;
+                    const distColor = isCritical ? "#ff4d4d" : (risk.distance_km < 5.0 ? "#f8a619" : "var(--text-dim)");
+                    
+                    if ((isCritical || risk.is_maneuvering) && !criticalRisk) {
+                        criticalRisk = true;
+                        criticalInfo = `${risk.satellite_1} & ${risk.satellite_2} (${risk.distance_km.toFixed(2)}km)`;
+                    }
+
+                    row.innerHTML = `
+                    <div style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <span style="font-weight:600; color:${risk.is_maneuvering ? '#f8a619' : 'white'}">${risk.satellite_1}</span> 
+                        <span style="opacity:0.5">↔</span> 
+                        <span>${risk.satellite_2}</span>
+                        <div style="font-size:0.55rem; color:#888;">${risk.uncertainty}</div>
+                    </div>
+                    <div style="font-weight:bold; color:${distColor}; font-family:monospace; margin-left:10px;">
+                        ${risk.distance_km.toFixed(2)}km
+                    </div>
+                `;
+                    table.appendChild(row);
+                });
+
+                // Update Global Monitor & Banner
+                if (criticalRisk) {
+                    banner.style.display = "flex";
+                    banner.style.background = "#ff4d4d";
+                    alertText.innerText = `COLLISION RISK: ${criticalInfo}`;
+                    monitorStatus.innerText = "MONITOR ALERT: COLLISION RISK DETECTED";
+                    document.getElementById('monitor-alert').style.background = "#ff4d4d";
+                } else {
+                    // If no critical collision, check if updatePasses already set a pass alert
+                    if (banner.style.background !== "rgb(255, 77, 77)") { // Check if it's NOT the collision red
+                        // let pass alert stay or hide
+                    }
+                    monitorStatus.innerText = "MONITOR ALERT: SYSTEM STABLE";
+                    document.getElementById('monitor-alert').style.background = "var(--accent-color)";
+                }
+
+            } catch (e) { console.error("Conjunction load failed", e); }
+        }
+
+        setInterval(updateConjunctions, 30000);
+        updateConjunctions();
+
+        async function searchSat() {
+            const q = document.getElementById('search-input').value;
+            const resDiv = document.getElementById('search-results');
+            resDiv.innerHTML = "Searching...";
+            const response = await fetch(`/search?q=${q}`);
+            const data = await response.json();
+            resDiv.innerHTML = "";
+            data.forEach(s => {
+                const div = document.createElement('div');
+                div.style = "padding: 5px; border-bottom: 1px solid #222; cursor: pointer; display: flex; justify-content: space-between;";
+                div.innerHTML = `<span>${s.name} (${s.norad_id})</span> <span style="color: var(--accent-color)">+</span>`;
+                div.onclick = () => addSat(s.name, s.norad_id);
+                resDiv.appendChild(div);
+            });
+        }
+
+        async function addSat(name, id) {
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('norad_id', id);
+            await fetch('/add-satellite', { method: 'POST', body: formData });
+            location.reload();
+        }
+
+        async function removeSat(id) {
+            const formData = new FormData();
+            formData.append('norad_id', id);
+            await fetch('/remove-satellite', { method: 'POST', body: formData });
+            location.reload();
+        }
+
+        async function updateLocation() {
+            const formData = new FormData();
+            formData.append('name', document.getElementById('gs-name').value);
+            formData.append('lat', document.getElementById('gs-lat').value);
+            formData.append('lon', document.getElementById('gs-lon').value);
+            formData.append('ele', document.getElementById('gs-ele').value);
+            await fetch('/update-location', { method: 'POST', body: formData });
+            location.reload(); // Konum değişince her şeyi sıfırla
+        }
+
+        async function findCity() {
+            const city = document.getElementById('city-search').value;
+            if (!city) return;
+            const btn = event.target;
+            btn.innerText = "⏳";
+
+            try {
+                const res = await fetch('/geocode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city: city })
+                });
+                const data = await res.json();
+                if (data.lat && data.lon) {
+                    document.getElementById('gs-lat').value = data.lat.toFixed(4);
+                    document.getElementById('gs-lon').value = data.lon.toFixed(4);
+                    document.getElementById('gs-name').value = data.display_name;
+                    document.getElementById('status-msg').innerText = "📍 Location found: " + data.display_name;
+                } else {
+                    alert("City not found!");
+                }
+            } catch (e) { console.error(e); }
+            btn.innerText = "+";
+        }
+
+        async function refreshMaps() {
+            const btn = document.getElementById('refresh-btn');
+            const spinner = document.getElementById('btn-spinner');
+            const text = document.getElementById('btn-text');
+            const msg = document.getElementById('status-msg');
+
+            btn.disabled = true;
+            spinner.style.display = "inline-block";
+            text.innerText = "UPDATING...";
+            msg.innerText = "COMPUTING ORBITS & PASSES...";
+
+            try {
+                const response = await fetch('/refresh-maps', { method: 'POST' });
+                if (response.ok) {
+                    document.getElementById('map-2d').src = '/static/satellite_track_2d.html?v=' + Date.now();
+                    document.getElementById('map-3d').src = '/static/satellite_track_3d.html?v=' + Date.now();
+                    document.getElementById('map-sky').src = '/static/satellite_sky_view.html?v=' + Date.now();
+                    updatePasses(); // Tabloyu da güncelle
+                    msg.innerText = "SYSTEM NOMINAL - LAST REFRESH: " + new Date().toLocaleTimeString();
+                } else {
+                    msg.innerText = "❌ REFRESH FAILED";
+                }
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = "none";
+                text.innerText = "REFRESH SYSTEM";
+            }
+        }
+
+        // CHAT PANEL CONTROLS
+        function toggleChatMinimize() {
+            document.getElementById('agent-chat').classList.toggle('minimized');
+        }
+
+        function hideChat() {
+            document.getElementById('agent-chat').style.display = 'none';
+            document.getElementById('agent-chat-reopen').style.display = 'flex';
+        }
+
+        function showChat() {
+            document.getElementById('agent-chat').style.display = 'flex';
+            document.getElementById('agent-chat-reopen').style.display = 'none';
+        }
+
+        // CHAT FUNCTIONS — live, calls /chat backend
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const body = document.getElementById('chat-body');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            // User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = "chat-bubble user";
+            userMsg.innerText = text;
+            body.appendChild(userMsg);
+
+            input.value = "";
+            body.scrollTop = body.scrollHeight;
+
+            // typing placeholder
+            const typing = document.createElement('div');
+            typing.className = "chat-bubble agent";
+            typing.innerHTML = '<span style="opacity:0.6">…analyzing live orbital data</span>';
+            body.appendChild(typing);
+            body.scrollTop = body.scrollHeight;
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }),
+                });
+                if (!res.ok) {
+                    if (res.status === 404 || res.status === 405) {
+                        typing.innerHTML =
+                            '<span style="color:#ff6b6b">⚠️ /chat endpoint not found on the server.</span>'
+                            + '<br><span style="color:#8b949e;font-size:0.85em">'
+                            + 'Restart the FastAPI process (uvicorn) so it picks up the new endpoints, then try again.'
+                            + '</span>';
+                    } else {
+                        const txt = await res.text();
+                        typing.innerHTML =
+                            `<span style="color:#ff6b6b">⚠️ Server error ${res.status}</span>`
+                            + `<br><span style="color:#8b949e;font-size:0.85em">${escapeHtml(txt.slice(0, 240))}</span>`;
+                    }
+                } else {
+                    const data = await res.json();
+                    if (data && data.reply) {
+                        typing.innerHTML = data.reply;
+                    } else {
+                        typing.innerHTML =
+                            '<span style="color:#ff6b6b">⚠️ Empty reply from agent.</span>';
+                    }
+                }
+            } catch (e) {
+                typing.innerHTML =
+                    '<span style="color:#ff6b6b">⚠️ Network error reaching mission agent.</span>'
+                    + `<br><span style="color:#8b949e;font-size:0.85em">${escapeHtml(String(e))}</span>`;
+                console.error(e);
+            }
+            body.scrollTop = body.scrollHeight;
+        }
+
+        async function updateLogs() {
+            try {
+                const res = await fetch('/api/logs');
+                const data = await res.json();
+                const term = document.getElementById('terminal-logs');
+                term.innerHTML = data.logs.map(l => `<div>${l}</div>`).join('');
+                term.scrollTop = term.scrollHeight;
+            } catch (e) { }
+        }
+        setInterval(updateLogs, 5000);
+        updateLogs();
+
+        // LIVE TRACKED STRIP — auto-refresh every 10s from /api/satellites
+        function escapeHtml(s) {
+            // Add Precision Risks if any
+            const pRisks = config.precision_risks || [];
+            for (const pr of pRisks) {
+                results.push({
+                    "satellite_1": pr.satellite_1,
+                    "satellite_2": pr.satellite_2,
+                    "distance_km": pr.distance_km,
+                    "uncertainty": "PRECISION (CDM)",
+                    "is_maneuvering": false,
+                    "is_precision": true,
+                    "probability": pr.probability
+                });
+            }
+            
+            return String(s).replace(/[&<>"']/g, c =>
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        async function refreshLiveSats() {
+            const strip = document.getElementById('live-sats-strip');
+            if (!strip) return;
+            try {
+                const res = await fetch('/api/satellites');
+                const data = await res.json();
+                const items = data.satellites || [];
+                const computed = data.computed_at_utc ? new Date(data.computed_at_utc) : new Date();
+
+                let rows = '';
+                if (items.length === 0) {
+                    rows = '<div class="empty">No satellites defined yet — add one from the sidebar.</div>';
+                } else {
+                    rows = items.map(s => {
+                        const live = s.live;
+                        let detail = '';
+                        let dotColor = '#ff6b6b';
+                        if (live) {
+                            const aboveHorizon = live.above_horizon === true;
+                            dotColor = aboveHorizon ? '#3fb950' : '#58a6ff';
+                            const v = (live.velocity_km_s != null) ? ` · ${live.velocity_km_s} km/s` : '';
+                            detail = `<span class="sat-id">
+                            ${live.latitude}°, ${live.longitude}° · ${live.altitude_km} km${v}
+                        </span>`;
+                        } else {
+                            detail = `<span class="sat-id" style="color:#ff6b6b">TLE not loaded</span>`;
+                        }
+                        return `
+                        <div class="live-sat-row">
+                            <span class="sat-name">
+                                <span style="display:inline-block;width:6px;height:6px;border-radius:50%;
+                                             background:${dotColor};box-shadow:0 0 6px ${dotColor};
+                                             margin-right:6px;"></span>
+                                🛰️ ${escapeHtml(s.name)}
+                                <span style="color:var(--text-dim);font-size:0.7rem;margin-left:4px;">
+                                    NORAD ${escapeHtml(s.norad_id)}
+                                </span>
+                            </span>
+                            ${detail}
+                        </div>`;
+                    }).join('');
+                }
+
+                const head = `
+                <div class="live-sats-title">
+                    <span class="live-dot"></span>
+                    <span>LIVE TRACKED</span>
+                    <span style="margin-left:auto; color: var(--text-dim);">
+                        ${items.length} ASSET${items.length === 1 ? '' : 'S'}
+                    </span>
+                </div>`;
+                strip.innerHTML = head + rows;
+
+                // also reflect count in chat header (optional)
+                const status = document.getElementById('monitor-alert-status');
+                if (status) {
+                    const missing = items.filter(s => !s.live).length;
+                    status.innerText = missing > 0
+                        ? `${items.length - missing}/${items.length} ASSETS LIVE`
+                        : `SYSTEM STABLE · ${items.length} LIVE`;
+                }
+            } catch (e) {
+                console.error("Live sats refresh failed", e);
+            }
+        }
+
+        // MANEUVER PLANNING
+        async function planManeuver() {
+            const satId = document.getElementById('man-sat-id').value;
+            const time = document.getElementById('man-time').value;
+            const dv = document.getElementById('man-dv').value;
+            const duration = document.getElementById('man-duration').value;
+
+            if (!satId || !time) { alert("Please select satellite and time!"); return; }
+
+            const formData = new FormData();
+            formData.append('norad_id', satId);
+            formData.append('time', time);
+            formData.append('dv', dv);
+            formData.append('duration', duration);
+
+            const res = await fetch('/plan-maneuver', { method: 'POST', body: formData });
+            if (res.ok) {
+                alert("Maneuver Scheduled! System will now account for trajectory changes.");
+                updateManeuverList();
+            }
+        }
+
+        async function updateManeuverList() {
+            const res = await fetch('/api/maneuvers');
+            const data = await res.json();
+            const list = document.getElementById('planned-maneuvers-list');
+            list.innerHTML = data.map(m => `
+                <div style="padding: 4px; border-bottom: 1px solid rgba(248, 166, 25, 0.1); display: flex; justify-content: space-between;">
+                    <span>🔥 ID ${m.norad_id}: ${m.time}</span>
+                    <button onclick="deleteManeuver('${m.id}')" style="background:none; border:none; color:red; cursor:pointer;">✕</button>
+                </div>
+            `).join('');
+        }
+
+        async function importCDM() {
+            const fileInput = document.getElementById('cdm-file');
+            if (fileInput.files.length === 0) { alert("Please select a CDM XML file."); return; }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            const res = await fetch('/upload-cdm', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.status === 'success') {
+                alert("CDM Precision Data Integrated Successfully!");
+                updateConjunctions();
+            } else {
+                alert("Error: " + data.error);
+            }
+        }
+
+        // initial call
+        updateManeuverList();
+
+        async function simulateAnomaly() {
+            const feed = document.getElementById('ssa-feed');
+            const btn = event.target;
+            btn.innerText = "SCANNING...";
+            
+            setTimeout(() => {
+                const time = new Date().toLocaleTimeString();
+                const div = document.createElement('div');
+                div.style = "color: #e3b341; margin-bottom: 4px; border-top: 1px solid rgba(255,255,255,0.05); padding-top:2px;";
+                div.innerText = `[${time}] No immediate optical drift detected in open networks.`;
+                feed.prepend(div);
+                btn.innerText = "SCAN FOR EXTERNAL ANOMALIES";
+            }, 1500);
+        }
+    </script>
 
 </body>
+
 </html>
