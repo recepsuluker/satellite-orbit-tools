@@ -59,3 +59,4 @@ Thumbs.db
 htmlcov/
 .coverage
 coverage.xml
+config.json

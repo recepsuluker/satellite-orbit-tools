@@ -40,18 +40,94 @@ def fetch_active_catalog():
         print(f"❌ Katalog indirilemedi: {e}")
         return []
 
+def fetch_tle_by_norad_id(norad_id, force_refresh=False):
+    """Belirli bir NORAD ID için Celestrak'tan doğrudan TLE indirir ve cache'ler.
+
+    Aktif katalogda olmayan (ör. yeni fırlatılan) uydular için fallback.
+    Per-satellite cache: tle_cache/<norad_id>.tle, 6 saatlik TTL.
+    """
+    norad_id = str(norad_id).strip()
+    if not norad_id.isdigit():
+        return None
+
+    cache_path = os.path.join(TLE_DATA_DIR, f"{norad_id}.tle")
+
+    if not force_refresh and os.path.exists(cache_path):
+        file_age = datetime.now() - datetime.fromtimestamp(os.path.getmtime(cache_path))
+        if file_age < timedelta(hours=6):
+            with open(cache_path, "r") as f:
+                lines = [ln.rstrip("\n") for ln in f.readlines() if ln.strip()]
+            if len(lines) >= 3:
+                return lines[0].strip(), lines[1], lines[2]
+
+    url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={norad_id}&FORMAT=tle"
+    try:
+        # Timeout'u 5 saniyeye düşürüp sistemin kilitlenmesini önleyelim
+        resp = requests.get(url, timeout=5)
+        resp.raise_for_status()
+        text = resp.text.strip()
+        if not text or "No GP data found" in text:
+            return None
+        lines = [ln.rstrip("\r\n") for ln in text.splitlines() if ln.strip()]
+        if len(lines) < 3:
+            return None
+        with open(cache_path, "w") as f:
+            f.write("\n".join(lines[:3]) + "\n")
+        return lines[0].strip(), lines[1], lines[2]
+    except (requests.exceptions.RequestException, Exception) as e:
+        # Hata logunu sessize alıp sistemin akışını bozmayalım
+        # print(f"⚠️ TLE indirilemedi (NORAD {norad_id}): {e}")
+        return None
+
+
+def parse_cdm_xml(content):
+    """CDM XML içeriğini parse eder ve kritik bilgileri döner."""
+    import xml.etree.ElementTree as ET
+    try:
+        root = ET.fromstring(content)
+        # Namespace handling
+        ns = {'ndm': 'urn:ccsds:schema:ndmxml'}
+        
+        # Basit bir eşleme (CDM formatına göre değişebilir)
+        sat1 = root.find(".//OBJECT1/OBJECT_NAME", ns)
+        sat2 = root.find(".//OBJECT2/OBJECT_NAME", ns)
+        dist = root.find(".//RELATIVE_METADATA/MISS_DISTANCE", ns)
+        prob = root.find(".//RELATIVE_METADATA/COLLISION_PROBABILITY", ns)
+        
+        return {
+            "satellite_1": sat1.text if sat1 is not None else "Unknown",
+            "satellite_2": sat2.text if sat2 is not None else "Unknown",
+            "distance_km": float(dist.text) / 1000.0 if dist is not None else 0.0,
+            "probability": prob.text if prob is not None else "N/A",
+            "source": "CDM (Precision)"
+        }
+    except Exception as e:
+        print(f"CDM Parse Error: {e}")
+        return None
+
 def get_satellite_from_catalog(name_or_id):
-    """Katalog içinde isim veya NORAD ID ile arama yapar, TLE döner."""
+    """Katalog içinde isim veya NORAD ID ile arama yapar, TLE döner.
+
+    Önce günlük 'active' kataloğuna bakar; bulamazsa Celestrak CATNR
+    endpoint'ine düşer (yeni uydular için).
+    """
     catalog = fetch_active_catalog()
     # Katalog 3 satırlı formatta (Name, Line 1, Line 2)
     for i in range(0, len(catalog) - 2, 3):
         name = catalog[i].strip()
         line1 = catalog[i+1]
         line2 = catalog[i+2]
-        norad_id = line2.split()[1]
-        
+        try:
+            norad_id = line2.split()[1]
+        except IndexError:
+            continue
+
         if str(name_or_id).upper() in name.upper() or str(name_or_id) == norad_id:
             return name, line1, line2
+
+    # Aktif katalogda yoksa NORAD ID ile direkt indirmeyi dene
+    if str(name_or_id).strip().isdigit():
+        return fetch_tle_by_norad_id(name_or_id)
     return None
 
 def get_active_satellites():
@@ -113,6 +189,68 @@ def get_upcoming_passes(satellite, ground_station, hours=24):
                 current_pass = {}
                 
     return passes
+
+def get_satellite_live_state(satellite, ground_station=None):
+    """Bir uydunun şu anki canlı durumunu hesaplar.
+
+    Returns dict: latitude, longitude, altitude_km, velocity_km_s,
+                  azimuth, elevation, range_km (yer istasyonu verildiyse),
+                  timestamp_utc.
+    """
+    ts = load.timescale()
+    now = datetime.now(timezone.utc)
+    t = ts.from_datetime(now)
+
+    geocentric = satellite.at(t)
+    subpoint = wgs84.subpoint(geocentric)
+
+    # Hız büyüklüğü (km/s) — geocentric.velocity.km_per_s vector
+    try:
+        vx, vy, vz = geocentric.velocity.km_per_s
+        velocity_km_s = round((vx * vx + vy * vy + vz * vz) ** 0.5, 3)
+    except Exception:
+        velocity_km_s = None
+
+    state = {
+        "latitude": round(subpoint.latitude.degrees, 4),
+        "longitude": round(subpoint.longitude.degrees, 4),
+        "altitude_km": round(subpoint.elevation.km, 2),
+        "velocity_km_s": velocity_km_s,
+        "timestamp_utc": now.isoformat(),
+    }
+
+    if ground_station is not None:
+        try:
+            diff = (satellite - ground_station).at(t)
+            alt, az, dist = diff.altaz()
+            state["azimuth"] = round(az.degrees, 2)
+            state["elevation"] = round(alt.degrees, 2)
+            state["range_km"] = round(dist.km, 2)
+            state["above_horizon"] = bool(alt.degrees > 0)
+        except Exception:
+            pass
+
+    return state
+
+
+def get_next_pass_summary(satellite, ground_station, hours=24):
+    """En yakın gelecek geçişi (varsa) özet dict olarak döner."""
+    passes = get_upcoming_passes(satellite, ground_station, hours=hours)
+    now = datetime.now(timezone.utc)
+    upcoming = [p for p in passes if p["aos"]["datetime"] > now]
+    if not upcoming:
+        return None
+    next_p = upcoming[0]
+    minutes_until = (next_p["aos"]["datetime"] - now).total_seconds() / 60.0
+    return {
+        "satellite": next_p["satellite"],
+        "aos_time": next_p["aos"]["time"],
+        "aos_datetime": next_p["aos"]["datetime"].isoformat(),
+        "max_elevation": next_p["max"]["elevation"],
+        "duration_min": next_p["duration_min"],
+        "minutes_until": round(minutes_until, 1),
+    }
+
 
 def send_telegram_alert(message):
     """Telegram üzerinden bildirim gönderir."""
