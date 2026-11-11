@@ -1,11 +1,12 @@
 """Tests for export utilities."""
 
-import pytest
 from datetime import datetime, timezone
 
-from src.engine.collision_detector import CollisionAnalysis, ConjunctionEvent
-from src.engine.visibility_calculator import VisibilityResult, PassEvent, GroundStation
-from src.utils.export import conjunction_events_to_csv, passes_to_csv, generate_html_report
+import pytest
+
+from satorbit.engine.collision_detector import CollisionAnalysis, ConjunctionEvent
+from satorbit.engine.visibility_calculator import GroundStation, PassEvent, VisibilityResult
+from satorbit.utils.export import conjunction_events_to_csv, generate_html_report, passes_to_csv
 
 
 @pytest.fixture
@@ -13,19 +14,27 @@ def sample_analysis():
     events = [
         ConjunctionEvent(
             time=datetime(2024, 2, 15, 12, 0, 0, tzinfo=timezone.utc),
-            satellite_a="ISS", satellite_b="STARLINK-1007",
-            norad_id_a=25544, norad_id_b=44713,
-            distance_km=5.234, relative_velocity_km_s=12.5,
+            satellite_a="ISS",
+            satellite_b="STARLINK-1007",
+            norad_id_a=25544,
+            norad_id_b=44713,
+            distance_km=5.234,
+            relative_velocity_km_s=12.5,
             risk_score=85.0,
-            pos_a=(28.5, -80.6, 408.0), pos_b=(28.6, -80.5, 550.0),
+            pos_a=(28.5, -80.6, 408.0),
+            pos_b=(28.6, -80.5, 550.0),
         ),
         ConjunctionEvent(
             time=datetime(2024, 2, 15, 14, 30, 0, tzinfo=timezone.utc),
-            satellite_a="ISS", satellite_b="FLOCK-3P",
-            norad_id_a=25544, norad_id_b=43013,
-            distance_km=8.123, relative_velocity_km_s=3.2,
+            satellite_a="ISS",
+            satellite_b="FLOCK-3P",
+            norad_id_a=25544,
+            norad_id_b=43013,
+            distance_km=8.123,
+            relative_velocity_km_s=3.2,
             risk_score=15.0,
-            pos_a=(30.0, -75.0, 410.0), pos_b=(30.1, -74.9, 500.0),
+            pos_a=(30.0, -75.0, 410.0),
+            pos_b=(30.1, -74.9, 500.0),
         ),
     ]
     return CollisionAnalysis(
@@ -47,14 +56,17 @@ def sample_visibility():
         satellite_name="ISS",
         passes=[
             PassEvent(
-                satellite_name="ISS", norad_id=25544,
+                satellite_name="ISS",
+                norad_id=25544,
                 aos_time=datetime(2024, 2, 15, 5, 0, 0, tzinfo=timezone.utc),
                 aos_azimuth=220.0,
                 max_time=datetime(2024, 2, 15, 5, 5, 0, tzinfo=timezone.utc),
-                max_elevation=45.0, max_azimuth=180.0,
+                max_elevation=45.0,
+                max_azimuth=180.0,
                 los_time=datetime(2024, 2, 15, 5, 10, 0, tzinfo=timezone.utc),
                 los_azimuth=130.0,
-                duration_seconds=600.0, max_distance_km=800.0,
+                duration_seconds=600.0,
+                max_distance_km=800.0,
             ),
         ],
         analysis_window_hours=24.0,

@@ -1,10 +1,5 @@
 """Tests for the database layer."""
 
-import pytest
-
-from src.database.models import initialize_database
-from src.database.manager import SatelliteDB
-
 
 class TestDatabaseInitialization:
     def test_initialize_creates_tables(self, initialized_db):
@@ -25,12 +20,14 @@ class TestDatabaseInitialization:
 class TestSatelliteCRUD:
     def test_upsert_and_get(self, initialized_db, sample_tle_iss):
         with initialized_db() as db:
-            db.upsert_satellite({
-                "norad_id": sample_tle_iss["norad_id"],
-                "name": sample_tle_iss["name"],
-                "tle_line1": sample_tle_iss["line1"],
-                "tle_line2": sample_tle_iss["line2"],
-            })
+            db.upsert_satellite(
+                {
+                    "norad_id": sample_tle_iss["norad_id"],
+                    "name": sample_tle_iss["name"],
+                    "tle_line1": sample_tle_iss["line1"],
+                    "tle_line2": sample_tle_iss["line2"],
+                }
+            )
             db.conn.commit()
 
             sat = db.get_satellite(25544)
@@ -40,12 +37,14 @@ class TestSatelliteCRUD:
 
     def test_search_by_name(self, initialized_db, sample_tle_iss):
         with initialized_db() as db:
-            db.upsert_satellite({
-                "norad_id": sample_tle_iss["norad_id"],
-                "name": sample_tle_iss["name"],
-                "tle_line1": sample_tle_iss["line1"],
-                "tle_line2": sample_tle_iss["line2"],
-            })
+            db.upsert_satellite(
+                {
+                    "norad_id": sample_tle_iss["norad_id"],
+                    "name": sample_tle_iss["name"],
+                    "tle_line1": sample_tle_iss["line1"],
+                    "tle_line2": sample_tle_iss["line2"],
+                }
+            )
             db.conn.commit()
 
             results = db.search_satellites("ISS")
@@ -54,12 +53,14 @@ class TestSatelliteCRUD:
 
     def test_search_by_norad_id(self, initialized_db, sample_tle_iss):
         with initialized_db() as db:
-            db.upsert_satellite({
-                "norad_id": sample_tle_iss["norad_id"],
-                "name": sample_tle_iss["name"],
-                "tle_line1": sample_tle_iss["line1"],
-                "tle_line2": sample_tle_iss["line2"],
-            })
+            db.upsert_satellite(
+                {
+                    "norad_id": sample_tle_iss["norad_id"],
+                    "name": sample_tle_iss["name"],
+                    "tle_line1": sample_tle_iss["line1"],
+                    "tle_line2": sample_tle_iss["line2"],
+                }
+            )
             db.conn.commit()
 
             results = db.search_satellites("25544")
@@ -94,25 +95,33 @@ class TestConjunctionEvents:
         with initialized_db() as db:
             # First add satellites
             for tle in [sample_tle_iss, sample_tle_starlink]:
-                db.upsert_satellite({
-                    "norad_id": tle["norad_id"],
-                    "name": tle["name"],
-                    "tle_line1": tle["line1"],
-                    "tle_line2": tle["line2"],
-                })
+                db.upsert_satellite(
+                    {
+                        "norad_id": tle["norad_id"],
+                        "name": tle["name"],
+                        "tle_line1": tle["line1"],
+                        "tle_line2": tle["line2"],
+                    }
+                )
             db.conn.commit()
 
             # Save event
-            event_id = db.save_conjunction_event({
-                "event_time": "2024-02-15T12:00:00",
-                "satellite_a_id": 25544,
-                "satellite_b_id": 44713,
-                "distance_km": 5.234,
-                "relative_vel": 12.5,
-                "risk_score": 85.0,
-                "lat_a": 28.5, "lon_a": -80.6, "alt_a": 408.0,
-                "lat_b": 28.6, "lon_b": -80.5, "alt_b": 550.0,
-            })
+            event_id = db.save_conjunction_event(
+                {
+                    "event_time": "2024-02-15T12:00:00",
+                    "satellite_a_id": 25544,
+                    "satellite_b_id": 44713,
+                    "distance_km": 5.234,
+                    "relative_vel": 12.5,
+                    "risk_score": 85.0,
+                    "lat_a": 28.5,
+                    "lon_a": -80.6,
+                    "alt_a": 408.0,
+                    "lat_b": 28.6,
+                    "lon_b": -80.5,
+                    "alt_b": 550.0,
+                }
+            )
             assert event_id > 0
 
             events = db.get_recent_conjunctions(10)

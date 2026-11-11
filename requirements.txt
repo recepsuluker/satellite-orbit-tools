@@ -1,34 +1,21 @@
-# Core
+# Runtime dependencies. The source of truth is pyproject.toml;
+# prefer `pip install .` (or `pip install -e ".[dev]"` for development).
 skyfield>=1.46
 sgp4>=2.22
 numpy>=1.24
 pandas>=2.0
-
-# Visualization
 plotly>=5.15
 folium>=0.14
-
-# Web Framework
-fastapi>=0.104
+fastapi>=0.108
 uvicorn[standard]>=0.24
 websockets>=12.0
-
-# Streamlit
+jinja2>=3.1
+python-multipart>=0.0.9
 streamlit>=1.28
-
-# Cache & Data
 redis>=5.0
-
-# HTTP
 aiohttp>=3.9
 httpx>=0.25
-
-# Configuration
+requests>=2.31
 python-dotenv>=1.0
 pydantic>=2.5
 pydantic-settings>=2.1
-
-# Testing (dev)
-pytest>=7.4
-pytest-asyncio>=0.21
-pytest-cov>=4.1

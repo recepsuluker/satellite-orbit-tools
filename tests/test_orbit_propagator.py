@@ -1,14 +1,11 @@
 """Tests for the orbit propagation engine."""
 
-import pytest
-from datetime import datetime, timezone
-
-from src.engine.orbit_propagator import (
-    propagate_satellite,
-    propagate_batch,
-    tle_to_satrec,
+from satorbit.engine.orbit_propagator import (
     PropagationResult,
     SatellitePosition,
+    propagate_batch,
+    propagate_satellite,
+    tle_to_satrec,
 )
 
 
@@ -20,8 +17,10 @@ class TestTleToSatrec:
 
     def test_invalid_tle_returns_nonstandard(self):
         # SGP4 may not raise but produces a satrec with error flags
-        sat = tle_to_satrec("1 00000U 00000A   00001.00000000  .00000000  00000-0  00000-0 0    09",
-                            "2 00000   0.0000   0.0000 0000000   0.0000   0.0000  1.00000000    06")
+        sat = tle_to_satrec(
+            "1 00000U 00000A   00001.00000000  .00000000  00000-0  00000-0 0    09",
+            "2 00000   0.0000   0.0000 0000000   0.0000   0.0000  1.00000000    06",
+        )
         assert sat is not None
 
 

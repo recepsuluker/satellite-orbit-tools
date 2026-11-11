@@ -3,15 +3,16 @@
 import os
 import sys
 import tempfile
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 
 # Ensure src is importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-# Use a temporary database for tests
+# Keep all application data (DB, logs, Mission Control config) in a temp dir
+os.environ["SATORBIT_HOME"] = tempfile.mkdtemp(prefix="satorbit_test_")
 os.environ["DATABASE_URL"] = f"sqlite:///{tempfile.mktemp(suffix='.db')}"
 os.environ["LOG_LEVEL"] = "WARNING"
 os.environ["LOG_DIR"] = tempfile.mkdtemp()
@@ -59,9 +60,11 @@ def sample_tle_flock():
 @pytest.fixture
 def initialized_db():
     """Initialize a fresh test database."""
-    from src.database.models import initialize_database
+    from satorbit.database.models import initialize_database
+
     initialize_database()
-    from src.database.manager import SatelliteDB
+    from satorbit.database.manager import SatelliteDB
+
     return SatelliteDB
 
 

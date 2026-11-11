@@ -60,3 +60,11 @@ htmlcov/
 .coverage
 coverage.xml
 config.json
+
+# Runtime data (now lives in $SATORBIT_HOME, default ~/.satorbit)
+data/
+tle_cache/
+static/
+satellite_analysis.csv
+.ruff_cache/
+.pytest_cache/

@@ -2,9 +2,10 @@
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.utils.celestrak_client import get_demo_satellites, _parse_tle_text, _tle_to_dict, GROUPS
+from satorbit.utils.celestrak_client import GROUPS, _parse_tle_text, get_demo_satellites
 
 
 class TestDemoSatellites:
@@ -19,8 +20,18 @@ class TestDemoSatellites:
 
     def test_demo_satellite_fields(self):
         sats = get_demo_satellites()
-        required = ["norad_id", "name", "tle_line1", "tle_line2", "epoch",
-                     "inclination", "eccentricity", "period_min", "apogee_km", "perigee_km"]
+        required = [
+            "norad_id",
+            "name",
+            "tle_line1",
+            "tle_line2",
+            "epoch",
+            "inclination",
+            "eccentricity",
+            "period_min",
+            "apogee_km",
+            "perigee_km",
+        ]
         for sat in sats:
             for field in required:
                 assert field in sat, f"Missing field '{field}' in {sat['name']}"

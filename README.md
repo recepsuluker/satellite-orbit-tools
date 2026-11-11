@@ -1,112 +1,160 @@
-# 🛰️ Autonomous Multi-Agent Satellite Operations Platform
+# 🛰️ Satellite Orbit Tools
 
-A professional, real-time satellite tracking and collision avoidance dashboard powered by an autonomous multi-agent architecture. Built for mission operators, constellation managers, and space situational awareness (SSA) professionals.
+[![CI](https://github.com/recepsuluker/satellite-orbit-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/recepsuluker/satellite-orbit-tools/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-![Dashboard Preview](docs/dashboard_preview.png)
+Track satellites in real time, screen them for close approaches, and predict
+ground-station passes. You can use it as an operator dashboard, a REST/WebSocket
+API, or a command-line tool. Everything is based on SGP4 propagation of public
+TLE data from CelesTrak (and optionally Space-Track).
 
-## 🚀 Key Features
+![Mission Control dashboard](docs/dashboard_preview.png)
 
-### 🌍 Hybrid Visualization Engine
-- **2D Mercator:** Smoothly animated satellite tracks using `AntPath` for orbital flow visualization.
-- **3D Orthographic Globe:** Premium globe view showing full constellation geometry.
-- **🔭 Sky-View Radar:** Topocentric polar plot (Azimuth/Elevation) for visual observers and ground station operations.
+## Features
 
-### 🤖 Multi-Agent Architecture
-| Agent | Role | Frequency |
-|-------|------|-----------|
-| **Commander** | User interface & chat commands | On-demand |
-| **Guardian** | Orbital collision hazard scanning | Every 30s (UI) |
-| **Notify** | Gmail & Slack alerting | Every 30 min / Instant |
-| **Auto-Sync** | TLE database synchronization + anomaly detection | Every 6 hours |
-| **Mission Log** | System-wide activity monitoring | Real-time |
+- **Live tracking.** Animated 2D map, 3D globe and a sky-view (azimuth/elevation)
+  radar for your ground station.
+- **Conjunction screening.** Every pair of tracked satellites is propagated and
+  checked for close approaches, with distance, relative velocity and a risk score.
+- **Pass prediction.** AOS / max elevation / LOS for the next 24 hours from any
+  location. Set the location by city name or coordinates.
+- **Maneuver awareness.** Flags TLE mean-motion jumps as possible maneuvers. You
+  can log planned burns and upload Space-Track CDM files for precision data.
+- **Alerts.** E-mail, Slack and Telegram notifications for critical approaches,
+  plus periodic status reports.
+- **Catalog of 8,000+ active satellites.** Search by name or NORAD ID.
+- **Three interfaces on one engine.** Mission Control dashboard, REST + WebSocket
+  API with OpenAPI docs, and a Streamlit analytics app with CSV/HTML reports.
 
-### 🔥 Maneuver Awareness Engine (v2.0)
-1. **Maneuver Planning:** Schedule thrust burns for your satellites with Delta-V and duration parameters. The system adjusts risk calculations accordingly.
-2. **TLE Drift & Jump Analysis:** Auto-Sync Agent compares incoming TLE data against previous snapshots. A Mean Motion jump > 0.005 triggers a **MANEUVER DETECTED** alert.
-3. **Uncertainty Visualization:** Conjunction risks are tagged with uncertainty levels — `NORMAL`, `HIGH (Maneuver)`, or `PRECISION (CDM)` — so operators know how much to trust each data point.
-4. **CDM Integration:** Upload Space-Track CDM (Conjunction Data Message) XML files for high-precision collision probability analysis.
-5. **Open SSA Monitor:** Interface for monitoring amateur observer networks and external anomaly feeds.
+## Installation
 
-### 📡 Omni-Channel Alerting
-- **Gmail:** Automated status reports with CSV attachment every 30 minutes. Instant URGENT alerts on critical conjunction events.
-- **Slack:** Rich webhook alerts with satellite names and risk counts.
-- **Telegram:** Direct link integration for mobile access.
-- **Space-Track:** Quick-access portal for professional SSA data.
-- **Manual Refresh:** Hit "REFRESH SYSTEM" to trigger an instant status report to Gmail + Slack with current asset list.
+Requires Python 3.10 or newer.
 
-### 📊 Additional Capabilities
-- **Active Catalog Integration:** Search 8,000+ active satellites via Celestrak GP API.
-- **Dynamic Pass Prediction:** AOS/MAX/LOS calculations for the next 24 hours.
-- **City-Based Geocoding:** Search by city name (OpenStreetMap Nominatim) to set ground station location.
-- **Conjunction Risk Analysis:** Real-time distance sorting with critical/warning thresholds and visual banners.
-
-## 🛠️ Tech Stack
-
-- **Backend:** Python 3.9+, FastAPI, Uvicorn
-- **Orbital Mechanics:** SGP4 (TEME→ECEF), Skyfield, Celestrak API
-- **Visualization:** Folium (Animated 2D), Plotly (3D & Polar Radar)
-- **Alerting:** SMTP (Gmail), Slack Webhooks, Telegram Bot API
-- **Data Formats:** TLE, CDM (XML), CSV
-- **Frontend:** Modern Dark UI with Glassmorphism effects
-
-## 🚀 Quick Start
-
-1. **Clone & Setup:**
-    ```bash
-    git clone <repo-url>
-    cd satellite-orbit-tools
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    ```
-
-2. **Run the Control Center:**
-    ```bash
-    python3 app.py
-    ```
-
-3. **Access Dashboard:**
-    Open [http://localhost:8000](http://localhost:8000) in your browser.
-
-## ⚙️ Configuration
-
-The system uses `config.json` for persistent storage. Manage everything via the UI:
-
-| Setting | Location |
-|---------|----------|
-| **Ground Station** | Sidebar → OPS LOCATION (City search or manual Lat/Lon) |
-| **Satellites** | Sidebar → ADD SATELLITE (Name or NORAD ID) |
-| **Email Alerts** | `config.json` → email section (SMTP credentials) |
-| **Slack Alerts** | `config.json` → slack section (Webhook URL) |
-| **Maneuver Plans** | Sidebar → MANEUVER PLANNING |
-| **CDM Data** | Sidebar → PRECISION ANALYSIS (Upload XML) |
-
-## 📁 Project Structure
-
-```
-satellite-orbit-tools/
-├── app.py                    # FastAPI main application + agent orchestration
-├── notify_agent.py           # NotifyAgent: Email/Slack alerting engine
-├── utils.py                  # TLE fetching, catalog management, geocoding
-├── satellite_map_2d.py       # 2D Mercator map generator (Folium)
-├── satellite_map_3d.py       # 3D Orthographic globe generator (Plotly)
-├── satellite_sky_view.py     # Sky-View polar radar generator (Plotly)
-├── config.json               # Runtime persisted settings (UI-managed)
-├── conjunction-warning.csv   # Auto-generated collision risk data
-├── templates/
-│   └── index.html            # Mission Control Dashboard UI
-├── static/                   # Generated map HTML files
-├── SKILL.md                  # Project conventions & architecture docs
-└── requirements.txt          # Python dependencies
+```bash
+pip install git+https://github.com/recepsuluker/satellite-orbit-tools.git
 ```
 
-## 🔄 Version History
+Or with Docker, which starts all interfaces at once:
 
-| Version | Highlights |
-|---------|-----------|
-| **v2.0** | Maneuver Awareness Engine (5-step plan), CDM Integration, TLE Jump Detection, 30-min notification cycle, Open SSA Monitor |
-| **v1.5** | Multi-Agent Architecture, Omni-channel Alerting (Gmail/Slack/Telegram), City Geocoding, Mission Terminal |
-| **v1.0** | Core tracking, 2D/3D/Sky-View maps, Pass Prediction, Conjunction Analysis |
+```bash
+git clone https://github.com/recepsuluker/satellite-orbit-tools.git
+cd satellite-orbit-tools
+docker compose up -d
+```
 
----
-*Developed with ❤️ for space exploration and orbital safety.*
+| Service | URL |
+|---|---|
+| Mission Control | http://localhost:8000 |
+| REST API (interactive docs) | http://localhost:8001/docs |
+| Analytics dashboard | http://localhost:8501 |
+
+## Quick start
+
+### Mission Control dashboard
+
+```bash
+satorbit mission-control
+```
+
+Open http://127.0.0.1:8000. The ISS and China's Tiangong station are tracked
+by default. From the sidebar you can:
+
+1. **Set your location** under *OPS LOCATION* (city search or lat/lon).
+2. **Add satellites** under *ADD SATELLITE* (name or NORAD ID, e.g. `25544`).
+3. Press **REFRESH SYSTEM** to redraw the maps.
+
+The Guardian agent screens the tracked satellites for conjunctions every five
+minutes. Results appear in the risk panel and in the Commander chat. Try
+`where is ISS`, `next pass` or `collision`.
+
+### Analytics dashboard and API
+
+```bash
+satorbit sync              # download TLEs from CelesTrak (or: satorbit sync --demo, offline)
+satorbit dashboard         # Streamlit app on http://127.0.0.1:8501
+satorbit api               # REST API, docs at http://127.0.0.1:8001/docs
+```
+
+Example API calls:
+
+```bash
+curl "http://127.0.0.1:8001/api/v1/satellites/?query=ISS"
+curl "http://127.0.0.1:8001/api/v1/satellites/25544/position"
+curl "http://127.0.0.1:8001/api/v1/visibility/passes/25544?lat=48.85&lon=2.35&duration_hours=24"
+```
+
+Run `satorbit --help` to see all commands.
+
+## Configuration
+
+All data (database, logs, Mission Control settings, caches) lives in one
+directory: `~/.satorbit` by default. Set `SATORBIT_HOME` to move it.
+
+**API and analytics dashboard:** use environment variables, or a `.env` file in
+the directory you run from. See [`.env.example`](.env.example) for every option.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `SPACETRACK_USERNAME` / `SPACETRACK_PASSWORD` | – | Optional, for Space-Track data ([free account](https://www.space-track.org/auth/createAccount)) |
+| `COLLISION_THRESHOLD_KM` | `10` | Close-approach threshold |
+| `GROUND_STATION_LAT` / `_LON` | Kennedy Space Center | Default observer |
+| `REDIS_HOST` | `localhost` | Optional cache. Without Redis, results are just computed fresh |
+| `API_HOST` / `API_PORT` | `127.0.0.1` / `8001` | API bind address |
+
+**Mission Control:** edit `~/.satorbit/mission_control/config.json`. Most
+settings are also editable in the UI.
+
+```jsonc
+{
+  "settings": { "conjunction_threshold_km": 10.0, "prediction_days": 1 },
+  "email":    { "smtp_server": "smtp.gmail.com", "smtp_port": 587,
+                "sender_email": "you@gmail.com", "sender_password": "<app password>",
+                "receiver_email": "ops@example.com" },
+  "slack":    { "webhook_url": "https://hooks.slack.com/services/..." },
+  "telegram": { "bot_token": "", "chat_id": "" }
+}
+```
+
+Alert channels stay off until you fill them in. For Gmail, use an
+[app password](https://support.google.com/accounts/answer/185833), not your
+account password.
+
+## How it works
+
+TLEs are propagated with SGP4 in the TEME frame, rotated to ECEF and converted
+to geodetic coordinates. Conjunction screening propagates each satellite on a
+common time grid (1-minute steps by default) and reports the pairs whose
+separation drops below the threshold. Pass prediction uses Skyfield's
+rise/culminate/set search for the configured ground station.
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the package layout, the
+agents and the data directory.
+
+## Limitations
+
+> **This is an awareness and research tool, not a flight-safety system.**
+> Public TLEs are accurate to roughly a kilometre near their epoch, and the
+> error grows by kilometres per day. Screening on a 1-minute grid can miss the
+> exact time of closest approach for fast crossings. Use CDMs from
+> Space-Track / 18th SDS for any operational collision-avoidance decision.
+
+## Development
+
+```bash
+git clone https://github.com/recepsuluker/satellite-orbit-tools.git
+cd satellite-orbit-tools
+pip install -e ".[dev]"
+pytest                    # 89 tests, no network needed
+ruff check . && ruff format --check .
+```
+
+The `examples/` folder has small stand-alone scripts that use the underlying
+libraries directly. `rust_engine/` is an experimental parallel collision
+kernel (PyO3 + Rayon) that isn't wired into the package yet.
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
+
+## License
+
+[MIT](LICENSE) © Recep Suluker

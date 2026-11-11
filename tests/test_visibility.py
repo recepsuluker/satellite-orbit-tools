@@ -1,18 +1,15 @@
 """Tests for the visibility/pass prediction calculator."""
 
 import pytest
-from datetime import datetime, timezone
 
-from src.engine.orbit_propagator import propagate_satellite
-from src.engine.visibility_calculator import (
-    calculate_passes,
+from satorbit.engine.orbit_propagator import propagate_satellite
+from satorbit.engine.visibility_calculator import (
     GroundStation,
-    VisibilityResult,
     PassEvent,
+    VisibilityResult,
     _geodetic_to_ecef,
-    _calculate_look_angle,
+    calculate_passes,
 )
-
 
 KENNEDY = GroundStation(
     name="Kennedy Space Center",
@@ -46,7 +43,8 @@ class TestGeodeticToEcef:
 class TestCalculatePasses:
     def test_iss_passes_from_kennedy(self, sample_tle_iss, sample_datetime):
         prop = propagate_satellite(
-            sample_tle_iss["line1"], sample_tle_iss["line2"],
+            sample_tle_iss["line1"],
+            sample_tle_iss["line2"],
             start_time=sample_datetime,
             duration_hours=24,
             step_minutes=0.5,
@@ -68,14 +66,16 @@ class TestCalculatePasses:
             assert p.duration_seconds > 0
 
     def test_empty_propagation(self):
-        from src.engine.orbit_propagator import PropagationResult
+        from satorbit.engine.orbit_propagator import PropagationResult
+
         prop = PropagationResult(norad_id=0, name="EMPTY", error="test")
         result = calculate_passes(prop, KENNEDY)
         assert result.passes == []
 
     def test_high_min_elevation_fewer_passes(self, sample_tle_iss, sample_datetime):
         prop = propagate_satellite(
-            sample_tle_iss["line1"], sample_tle_iss["line2"],
+            sample_tle_iss["line1"],
+            sample_tle_iss["line2"],
             start_time=sample_datetime,
             duration_hours=48,
             step_minutes=0.5,

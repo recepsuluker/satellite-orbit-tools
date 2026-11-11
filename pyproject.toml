@@ -1,35 +1,48 @@
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "satellite-orbit-tools"
-version = "1.0.0"
-description = "Real-time satellite collision detection and monitoring system"
+dynamic = ["version"]
+description = "Satellite tracking, conjunction screening and ground-station pass prediction with a web dashboard, REST API and CLI"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
-authors = [
-    {name = "Recep Suluker"}
+authors = [{ name = "Recep Suluker" }]
+keywords = ["satellite", "sgp4", "tle", "conjunction", "space-situational-awareness", "orbit", "fastapi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Framework :: FastAPI",
 ]
-
 dependencies = [
     "skyfield>=1.46",
-    "pandas>=2.0",
+    "sgp4>=2.22",
     "numpy>=1.24",
+    "pandas>=2.0",
     "plotly>=5.15",
     "folium>=0.14",
-    "fastapi>=0.104",
+    "fastapi>=0.108",
     "uvicorn[standard]>=0.24",
     "websockets>=12.0",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
     "streamlit>=1.28",
     "redis>=5.0",
     "aiohttp>=3.9",
+    "httpx>=0.25",
+    "requests>=2.31",
     "python-dotenv>=1.0",
     "pydantic>=2.5",
     "pydantic-settings>=2.1",
-    "httpx>=0.25",
-    "sgp4>=2.22",
 ]
 
 [project.optional-dependencies]
@@ -37,18 +50,47 @@ dev = [
     "pytest>=7.4",
     "pytest-asyncio>=0.21",
     "pytest-cov>=4.1",
-    "httpx>=0.25",
-    "ruff>=0.1",
+    "ruff>=0.5",
+    "build>=1.0",
 ]
+
+[project.scripts]
+satorbit = "satorbit.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/recepsuluker/satellite-orbit-tools"
+Issues = "https://github.com/recepsuluker/satellite-orbit-tools/issues"
+Changelog = "https://github.com/recepsuluker/satellite-orbit-tools/blob/main/CHANGELOG.md"
+
+[tool.setuptools.dynamic]
+version = { attr = "satorbit.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["satorbit*"]
+
+[tool.setuptools.package-data]
+"satorbit.mission_control" = ["templates/*.html", "config.example.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-v --tb=short"
+addopts = "--tb=short"
+
+[tool.coverage.run]
+source = ["satorbit"]
+omit = ["satorbit/dashboard/*"]
 
 [tool.ruff]
 target-version = "py310"
-line-length = 100
+line-length = 110
+extend-exclude = ["rust_engine"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W"]
+select = ["E", "F", "I", "W", "B", "UP"]
+ignore = [
+    "E501",  # long HTML/f-strings in the dashboard; formatting is handled by ruff format
+    "B008",  # FastAPI dependency-injection defaults
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["satorbit"]

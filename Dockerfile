@@ -1,52 +1,29 @@
-FROM python:3.11-slim AS base
+# syntax=docker/dockerfile:1
+FROM python:3.12-slim
 
-# System dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential curl && \
-    rm -rf /var/lib/apt/lists/*
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    SATORBIT_HOME=/data \
+    API_HOST=0.0.0.0 \
+    STREAMLIT_ADDRESS=0.0.0.0
+
+RUN useradd --create-home --uid 1000 satorbit \
+    && mkdir -p /data && chown satorbit:satorbit /data
 
 WORKDIR /app
+COPY pyproject.toml README.md LICENSE ./
+COPY satorbit ./satorbit
+RUN pip install .
 
-# Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+USER satorbit
+VOLUME ["/data"]
+EXPOSE 8000 8001 8501
 
-# Copy source
-COPY . .
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/logs', timeout=4)" || exit 1
 
-# Create data/logs directories
-RUN mkdir -p data logs
-
-EXPOSE 8000
-
-# FastAPI server
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-# ── Streamlit target ────────────────────────────────────────────
-FROM base AS streamlit
-
-EXPOSE 8501
-
-CMD ["streamlit", "run", "frontend/app.py", \
-     "--server.port=8501", \
-     "--server.headless=true", \
-     "--server.address=0.0.0.0"]
-
-# ── Rust engine builder ─────────────────────────────────────────
-FROM rust:1.75-slim AS rust-builder
-
-RUN apt-get update && apt-get install -y python3-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-WORKDIR /build
-COPY rust_engine/ .
-
-RUN cargo build --release
-
-# ── Production with Rust engine ─────────────────────────────────
-FROM base AS production
-
-# Copy Rust shared library if built
-# COPY --from=rust-builder /build/target/release/libsatellite_rs.so /app/satellite_rs.so
-
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+# Default: Mission Control dashboard. Override the command to run
+# `satorbit api` or `satorbit dashboard` (see docker-compose.yml).
+CMD ["satorbit", "mission-control", "--host", "0.0.0.0", "--port", "8000"]

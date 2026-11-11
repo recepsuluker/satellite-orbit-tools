@@ -1,10 +1,8 @@
 """Tests for TLE parsing utilities."""
 
-import pytest
 from datetime import timezone
 
-from src.utils.tle_parser import parse_tle, parse_tle_text, TLEData
-
+from satorbit.utils.tle_parser import TLEData, parse_tle, parse_tle_text
 
 SAMPLE_NAME = "ISS (ZARYA)"
 SAMPLE_LINE1 = "1 25544U 98067A   24045.51792824  .00016717  00000-0  29820-3 0  9992"

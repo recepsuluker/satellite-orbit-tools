@@ -3,9 +3,9 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.api.main import app
-from src.database.models import initialize_database
-from src.database.manager import SatelliteDB
+from satorbit.api.main import app
+from satorbit.database.manager import SatelliteDB
+from satorbit.database.models import initialize_database
 
 
 @pytest.fixture(autouse=True)
@@ -13,20 +13,24 @@ def setup_db():
     initialize_database()
     # Seed a test satellite
     with SatelliteDB() as db:
-        db.upsert_satellite({
-            "norad_id": 25544,
-            "name": "ISS (ZARYA)",
-            "tle_line1": "1 25544U 98067A   24045.51792824  .00016717  00000-0  29820-3 0  9992",
-            "tle_line2": "2 25544  51.6412 236.2420 0004448  38.8780  36.1584 15.49953808440497",
-            "object_type": "PAYLOAD",
-        })
-        db.upsert_satellite({
-            "norad_id": 44713,
-            "name": "STARLINK-1007",
-            "tle_line1": "1 44713U 19074A   24045.54326621  .00001584  00000-0  11834-3 0  9999",
-            "tle_line2": "2 44713  53.0541 242.9636 0001406  85.4385 274.6779 15.06388506244765",
-            "object_type": "PAYLOAD",
-        })
+        db.upsert_satellite(
+            {
+                "norad_id": 25544,
+                "name": "ISS (ZARYA)",
+                "tle_line1": "1 25544U 98067A   24045.51792824  .00016717  00000-0  29820-3 0  9992",
+                "tle_line2": "2 25544  51.6412 236.2420 0004448  38.8780  36.1584 15.49953808440497",
+                "object_type": "PAYLOAD",
+            }
+        )
+        db.upsert_satellite(
+            {
+                "norad_id": 44713,
+                "name": "STARLINK-1007",
+                "tle_line1": "1 44713U 19074A   24045.54326621  .00001584  00000-0  11834-3 0  9999",
+                "tle_line2": "2 44713  53.0541 242.9636 0001406  85.4385 274.6779 15.06388506244765",
+                "object_type": "PAYLOAD",
+            }
+        )
         db.conn.commit()
     yield
 
@@ -97,21 +101,27 @@ class TestSatelliteEndpoints:
 
 class TestCollisionEndpoints:
     def test_analyze_collision(self, client):
-        resp = client.post("/api/v1/collision/analyze", json={
-            "norad_ids": [25544, 44713],
-            "threshold_km": 10.0,
-            "duration_hours": 1.0,
-            "step_minutes": 5.0,
-        })
+        resp = client.post(
+            "/api/v1/collision/analyze",
+            json={
+                "norad_ids": [25544, 44713],
+                "threshold_km": 10.0,
+                "duration_hours": 1.0,
+                "step_minutes": 5.0,
+            },
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert "total_pairs_checked" in data
         assert data["total_pairs_checked"] == 1
 
     def test_analyze_too_few_satellites(self, client):
-        resp = client.post("/api/v1/collision/analyze", json={
-            "norad_ids": [25544],
-        })
+        resp = client.post(
+            "/api/v1/collision/analyze",
+            json={
+                "norad_ids": [25544],
+            },
+        )
         assert resp.status_code == 400
 
     def test_collision_history(self, client):
@@ -120,9 +130,7 @@ class TestCollisionEndpoints:
         assert "events" in resp.json()
 
     def test_quick_check(self, client):
-        resp = client.post(
-            "/api/v1/collision/quick-check?norad_id_a=25544&norad_id_b=44713&duration_hours=1"
-        )
+        resp = client.post("/api/v1/collision/quick-check?norad_id_a=25544&norad_id_b=44713&duration_hours=1")
         assert resp.status_code == 200
         data = resp.json()
         assert data["satellite_a"] == "ISS (ZARYA)"

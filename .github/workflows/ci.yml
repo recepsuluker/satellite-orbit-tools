@@ -1,104 +1,91 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [main, master, "claude/*"]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
 
 jobs:
-  # ── Linting ─────────────────────────────────────────────────────
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check .
+      - run: ruff format --check .
 
-      - name: Install ruff
-        run: pip install ruff
-
-      - name: Run ruff check
-        run: ruff check src/ tests/
-
-  # ── Python Tests ────────────────────────────────────────────────
   test:
-    runs-on: ubuntu-latest
     needs: lint
-    services:
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: "pip"
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-asyncio pytest-cov httpx
-
-      - name: Run tests with coverage
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: pytest --cov --cov-report=term-missing --cov-report=xml
         env:
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
           LOG_LEVEL: WARNING
-        run: |
-          pytest tests/ -v --tb=short --cov=src --cov-report=xml --cov-report=term-missing
-
-      - name: Upload coverage
-        if: always()
-        uses: actions/upload-artifact@v4
+      - run: satorbit --version
+      - uses: actions/upload-artifact@v4
+        if: matrix.python == '3.12'
         with:
           name: coverage-report
           path: coverage.xml
 
-  # ── Rust Engine ─────────────────────────────────────────────────
+  package:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: python -m build
+      - name: Install the wheel in a clean environment
+        run: |
+          python -m venv /tmp/clean
+          /tmp/clean/bin/pip install dist/*.whl
+          cd /tmp && /tmp/clean/bin/satorbit --help
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t satellite-orbit-tools .
+      - name: Smoke test the container
+        run: |
+          docker run -d --name sot -p 8000:8000 satellite-orbit-tools
+          for i in $(seq 1 30); do
+            curl -fsS http://localhost:8000/ > /dev/null && exit 0
+            sleep 2
+          done
+          docker logs sot
+          exit 1
+      - run: docker compose config --quiet
+
   rust:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust_engine
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Check Rust engine
-        working-directory: rust_engine
-        run: cargo check
-
-      - name: Run Rust tests
-        working-directory: rust_engine
-        run: cargo test
-
-      - name: Build Rust engine
-        working-directory: rust_engine
-        run: cargo build --release
-
-  # ── Docker Build ────────────────────────────────────────────────
-  docker:
-    runs-on: ubuntu-latest
-    needs: [test, rust]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t satellite-orbit-tools .
-
-      - name: Build with Docker Compose
-        run: docker compose build
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo check
+      - run: cargo test

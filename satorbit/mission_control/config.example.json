@@ -1,0 +1,38 @@
+{
+    "satellites": [
+        {
+            "name": "ISS (ZARYA)",
+            "norad_id": "25544"
+        },
+        {
+            "name": "CSS (TIANHE)",
+            "norad_id": "48274"
+        }
+    ],
+    "ground_station": {
+        "name": "Kennedy Space Center",
+        "latitude": 28.572,
+        "longitude": -80.648,
+        "elevation_m": 3.0
+    },
+    "settings": {
+        "conjunction_threshold_km": 10.0,
+        "prediction_days": 1,
+        "tle_cache_expire_hours": 24
+    },
+    "email": {
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "sender_email": "",
+        "sender_password": "",
+        "receiver_email": ""
+    },
+    "slack": {
+        "webhook_url": "",
+        "channel": "#satellite-ops"
+    },
+    "telegram": {
+        "bot_token": "",
+        "chat_id": ""
+    }
+}
